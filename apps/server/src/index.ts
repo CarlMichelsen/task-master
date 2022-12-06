@@ -11,9 +11,9 @@ const app = express();
 const port = isNaN(Number(process.env.PORT)) ? 8080 : Number(process.env.PORT);
 
 // test endpoint
-app.get("/test", (req: express.Request, res: express.Response) => {
-	res.send({ test: "yes" });
-	console.log("test");
+app.get("/health", (req: express.Request, res: express.Response) => {
+	res.send(true);
+	console.log("healthcheck");
 });
 
 // serve website
