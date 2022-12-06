@@ -15,7 +15,9 @@ app.get("/test", (req: express.Request, res: express.Response) => {
 });
 
 // serve website
-app.use(express.static(path.join(__dirname, "public")));
+const dir = path.join(__dirname, "public");
+console.log(dir);
+app.use(express.static(dir));
 
 // start webserver
 app.listen(port, () => {
