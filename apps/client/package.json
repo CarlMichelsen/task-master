@@ -6,12 +6,14 @@
   "scripts": {
     "dev": "vite --port 3000",
     "build": "vite build",
+    "postbuild": "copyfiles --all --error --up 1 dist/**/* ../server/src/public",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.4.0",
     "@tsconfig/svelte": "^3.0.0",
+    "copyfiles": "^2.4.1",
     "autoprefixer": "^10.4.13",
     "axios": "^1.2.1",
     "postcss": "^8.4.19",

@@ -1,12 +1,12 @@
 {
-  "name": "task-master",
+  "name": "server",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "postbuild": "copyfiles --all --error --up 1 src/public/**/* ../../dist-webserver/",
+    "postbuild": "copyfiles --all --error --up 2 src/public/**/* ../../dist-webserver/public",
     "dev": "nodemon ./src/index.ts",
     "start": "node ../../dist-webserver",
     "lint": "eslint",
