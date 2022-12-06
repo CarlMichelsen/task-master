@@ -1,20 +1,21 @@
-import * as express from "express";
-import * as dotenv from "dotenv";
+import express from "express";
+import path from "path";
+import { config } from "dotenv";
 
 // load environment variables
-dotenv.config();
+config();
 
-const app = express.default();
+const app = express();
 const port = isNaN(Number(process.env.PORT)) ? 8080 : Number(process.env.PORT);
-
-// serve website
-app.use(express.static("public"));
 
 // test endpoint
 app.get("/test", (req: express.Request, res: express.Response) => {
 	res.send({ test: "yes" });
 	console.log("test");
 });
+
+// serve website
+app.use(express.static(path.join(__dirname, "public")));
 
 // start webserver
 app.listen(port, () => {
