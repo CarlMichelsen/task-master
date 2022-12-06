@@ -2,6 +2,8 @@ import express from "express";
 import path from "path";
 import { config } from "dotenv";
 
+import verifyExists from "./verifyExists";
+
 // load environment variables
 config();
 
@@ -15,8 +17,15 @@ app.get("/test", (req: express.Request, res: express.Response) => {
 });
 
 // serve website
-app.use("/", express.static(path.join(__dirname, "public")));
-app.use("/debug", express.static(path.join(__dirname, "debug")));
+const publicDir = path.join(__dirname, "public");
+if (!verifyExists(publicDir))
+	throw new Error('Could not find "public" folder...');
+app.use("/", express.static(publicDir));
+
+const debugDir = path.join(__dirname, "debug");
+if (!verifyExists(debugDir))
+	throw new Error('Could not find "debug" folder...');
+app.use("/debug", express.static(debugDir));
 
 // start webserver
 app.listen(port, () => {
