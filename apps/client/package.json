@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3000",
-    "build": "vite build",
-    "postbuild": "copyfiles --all --error --up 1 dist/**/* ../server/src/public",
+    "build": "vite build && copyfiles --all --error --up 1 dist/**/* ../server/src/public",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },

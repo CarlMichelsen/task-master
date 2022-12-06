@@ -5,8 +5,14 @@
             "dependsOn": ["^build"],
             "outputs": ["dist/**"]
         },
-        "dev": {},
+        "dev": {
+            "cache": false
+        },
+        "client#build": {
+            "cache": false
+        },
         "server#build": {
+            "cache": false,
             "dependsOn": ["client#build"]
         }
     }
