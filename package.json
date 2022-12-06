@@ -1,0 +1,28 @@
+{
+    "name": "task-master",
+    "version": "1.0.0",
+    "description": "Root package.json in mono-repo",
+    "scripts": {
+      "build": "turbo run build",
+      "test": "turbo run test",
+      "lint": "turbo run lint",
+      "dev": "turbo run dev"
+    },
+    "devDependencies": {
+      "turbo": "^1.6.3"
+    },
+    "workspaces": [
+      "apps/*",
+      "packages/*"
+    ],
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/CarlMichelsen/task-master.git"
+    },
+    "author": "Carl Lilholm Michelsen",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/CarlMichelsen/task-master/issues"
+    },
+    "homepage": "https://github.com/CarlMichelsen/task-master#readme"
+  }
