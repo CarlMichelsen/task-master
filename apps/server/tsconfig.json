@@ -8,5 +8,5 @@
         "allowJs": false,
         "strict": true
     },
-    "include": ["src/**/*"],
+    "include": ["src/**/*"]
 }

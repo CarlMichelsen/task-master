@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "postbuild": "copyfiles --all --error --up 2 src/public/**/* ../../dist-webserver/public",
+    "build": "tsc && copyfiles --all --error --up 2 src/public/**/* ../../dist-webserver/public",
     "dev": "nodemon ./src/index.ts",
     "start": "node ../../dist-webserver",
     "lint": "eslint",
