@@ -22,11 +22,6 @@ if (!verifyExists(publicDir))
 	throw new Error('Could not find "public" folder...');
 app.use("/", express.static(publicDir));
 
-const debugDir = path.join(__dirname, "debug");
-if (!verifyExists(debugDir))
-	throw new Error('Could not find "debug" folder...');
-app.use("/debug", express.static(debugDir));
-
 // start webserver
 app.listen(port, () => {
 	console.log(`Server started on port ${port}`);
