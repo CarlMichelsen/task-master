@@ -17,7 +17,7 @@ jobs:
 
      -
       name: Build container image
-      run: docker build -t ${REGISTRY}/${IMAGE_NAME}:$(echo ${GITHUB_SHA}) .
+      run: docker build -t ${REGISTRY}/${IMAGE_NAME}:$(echo ${GITHUB_SHA} | head -c7) .
       
      -
       name: Install doctl
