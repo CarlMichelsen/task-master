@@ -18,6 +18,10 @@ jobs:
      -
       name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
+
+     -
+      name: Build container image
+      run: docker build -t $(echo $REGISTRY)/$(echo $IMAGE_NAME):$(echo $GITHUB_SHA | head -c7) .
       
      -
       name: Install doctl
