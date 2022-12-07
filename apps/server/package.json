@@ -4,9 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && copyfiles --all --error --up 2 src/public/**/* ../../dist-webserver/public",
+    "prebuild": "copyfiles --all --error --up 2 src/public/**/* dist/public",
+    "build": "tsc",
     "dev": "nodemon ./src/index.ts",
-    "start": "node ../../dist-webserver",
+    "start": "node dist",
     "lint": "eslint",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

@@ -1,15 +1,9 @@
-FROM node AS install
+FROM node AS publish
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
-
-FROM install AS build
-WORKDIR /app
-COPY . .
+COPY ./ ./
 RUN npm install
 RUN npm run build
 
-FROM build AS publish
-COPY ./dist-webserver/ .
+
 EXPOSE 8080
-ENTRYPOINT [ "node", "index.js" ]
+ENTRYPOINT [ "npm", "run", "start" ]

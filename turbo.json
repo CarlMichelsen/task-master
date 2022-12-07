@@ -13,7 +13,8 @@
         },
         "server#build": {
             "cache": false,
-            "dependsOn": ["client#build"]
+            "dependsOn": ["client#build"],
+            "outputs": ["dist/**"]
         }
     }
 }

@@ -17,24 +17,10 @@ app.get("/health", (req: express.Request, res: express.Response) => {
 	console.log("healthcheck");
 });
 
-// uptime endpoint
-app.get("/uptime", (req: express.Request, res: express.Response) => {
-	const rawSeconds = Date.now() - startup.getTime();
-	const seconds = rawSeconds % 60;
-	const minutes = Math.floor(rawSeconds / 60) % 60;
-	const hours = Math.floor(rawSeconds / 60 / 60) % 24;
-	const dd = (num: number) => `${num.toString().length > 1 ? "" : "0"}${num}`;
-	const timeString = `${dd(hours)}.${dd(minutes)}.${dd(seconds)}`;
-	const value = `UPTIME: ${timeString}`;
-	res.send(value);
-	console.log(value);
-});
-
 // serve website
 const publicDir = path.join(__dirname, "public");
-if (!verifyExists(publicDir))
-	throw new Error('Could not find "public" folder...');
-app.use("/", express.static(publicDir));
+if (!verifyExists(publicDir)) throw new Error('Could not find "public" folder');
+app.use("/", express.static(publicDir, { redirect: true }));
 
 // start webserver
 app.listen(port, () => {

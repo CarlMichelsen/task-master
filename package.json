@@ -7,7 +7,7 @@
       "test": "turbo run test",
       "lint": "turbo run lint",
       "dev": "turbo run dev",
-      "start": "node dist-webserver"
+      "start": "node ./apps/server/dist/index.js"
     },
     "devDependencies": {
       "turbo": "^1.6.3"
