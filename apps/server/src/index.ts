@@ -23,11 +23,9 @@ app.get("/uptime", (req: express.Request, res: express.Response) => {
 	const seconds = rawSeconds % 60;
 	const minutes = Math.floor(rawSeconds / 60) % 60;
 	const hours = Math.floor(rawSeconds / 60 / 60) % 24;
-	const doubleDigit = (num: number) =>
-		`${num.toString().length > 1 ? "" : "0"}${num}`;
-	const value = `UPTIME: ${doubleDigit(hours)}.${doubleDigit(
-		minutes
-	)}.${doubleDigit(seconds)}`;
+	const dd = (num: number) => `${num.toString().length > 1 ? "" : "0"}${num}`;
+	const timeString = `${dd(hours)}.${dd(minutes)}.${dd(seconds)}`;
+	const value = `UPTIME: ${timeString}`;
 	res.send(value);
 	console.log(value);
 });
