@@ -1,9 +1,12 @@
-FROM node AS publish
+FROM node AS build
 WORKDIR /app
 COPY ./ ./
 RUN npm install
 RUN npm run build
 
+FROM build AS publish
+COPY --from=build /app/apps/server/dist .
 
 EXPOSE 80
-ENTRYPOINT [ "npm", "run", "start" ]
+EXPOSE 443
+ENTRYPOINT [ "node", "index.js" ]
