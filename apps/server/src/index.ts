@@ -17,9 +17,13 @@ app.get("/health", (req: express.Request, res: express.Response) => {
 	console.log("healthcheck");
 });
 
-// serve website
+// run checks
 const publicDir = path.join(__dirname, "public");
 if (!verifyExists(publicDir)) throw new Error('Could not find "public" folder');
+const indexF = path.join(__dirname, "public/index.html");
+if (!verifyExists(indexF)) throw new Error('Could not find "index.html" file');
+
+// serve website
 app.use("/", express.static(publicDir, { redirect: true }));
 
 // start webserver
