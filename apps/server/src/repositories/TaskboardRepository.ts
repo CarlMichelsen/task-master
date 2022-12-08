@@ -14,6 +14,16 @@ export class TaskboardRepository implements ITaskboardRepository {
 		return item?.[1] ?? null;
 	}
 
+	async getByUri(uri: string): Promise<Taskboard | null> {
+		const list = Array.from(TaskboardRepository.taskboards).map((x) => x[1]);
+		return list.find((x) => x.uri === uri) ?? null;
+	}
+
+	async getByName(name: string): Promise<Taskboard | null> {
+		const list = Array.from(TaskboardRepository.taskboards).map((x) => x[1]);
+		return list.find((x) => x.name === name) ?? null;
+	}
+
 	async upsert(input: Taskboard): Promise<boolean> {
 		try {
 			TaskboardRepository.taskboards.set(input.id, input);

@@ -5,7 +5,7 @@ import axios from "axios";
 import { readCookie, createCookie } from "../util/cookie";
 
 export class AuthService {
-	static user: User;
+	static user: User | null = null;
 
 	static getLocalIdentity(): LocalIdentity | null {
 		const identityCookieString = readCookie("identity");
