@@ -1,5 +1,9 @@
 node_modules
-dist-webserver
-dist
-public
-.turbo
+
+apps/client/.turbo
+apps/client/node_modules
+
+apps/server/.turbo
+apps/server/node_modules
+apps/server/dist
+apps/server/src/public
