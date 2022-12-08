@@ -8,6 +8,11 @@ export class UserRepository implements IUserRepository {
 		return UserRepository.users.get(id) ?? null;
 	}
 
+	async getByTaskboardId(id: string): Promise<User[]> {
+		const list = Array.from(UserRepository.users).map((x) => x[1]);
+		return list.filter((usr) => usr.taskboardId === id);
+	}
+
 	async getByName(name: string): Promise<User | null> {
 		const list = Array.from(UserRepository.users).map((x) => x[1]);
 		return list.find((usr) => usr.username === name) ?? null;

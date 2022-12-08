@@ -7,6 +7,7 @@ import { ITaskboardService } from "./ITaskboardService";
 import { Taskboard } from "../models/Taskboard";
 
 import { v4 as uuidv4 } from "uuid";
+import { id2uri } from "../util/id2uri";
 
 export class TaskboardService implements ITaskboardService {
 	taskboardRepository: ITaskboardRepository;
@@ -21,6 +22,8 @@ export class TaskboardService implements ITaskboardService {
 		name: string,
 		ownerId: string
 	): Promise<Taskboard | null> {
+		const owner = await this.userRepository.getById(ownerId);
+		if (!owner) return null;
 		const ownerOccupied = await this.taskboardRepository.getByOwnerId(ownerId);
 		if (ownerOccupied) {
 			const ownerFree = await this.safelyDeleteTaskboard(ownerOccupied.id);
@@ -29,7 +32,8 @@ export class TaskboardService implements ITaskboardService {
 					"Failed to delete previous taskboard for the owner of this new taskboard."
 				);
 		}
-		const taskboard = new Taskboard(uuidv4(), name, ownerId);
+		const id = uuidv4();
+		const taskboard = new Taskboard(id, id2uri(id), name, ownerId);
 		const success = await this.taskboardRepository.upsert(taskboard);
 		if (success) return taskboard;
 		return null;
@@ -38,9 +42,10 @@ export class TaskboardService implements ITaskboardService {
 	async safelyDeleteTaskboard(id: string): Promise<boolean> {
 		const taskboard = await this.taskboardRepository.getById(id);
 		if (!taskboard) return false;
-		for (const memberId of taskboard.members) {
-			const member = await this.userRepository.getById(memberId);
-			if (!member?.taskboardId) continue;
+		const members = await this.userRepository.getByTaskboardId(id);
+
+		for (const member of members) {
+			if (!member.taskboardId) continue;
 			member.taskboardId = null;
 			const success = await this.userRepository.upsert(member);
 			if (!success)
@@ -48,6 +53,7 @@ export class TaskboardService implements ITaskboardService {
 					"Failed to remove user from taskboard about to be deleted."
 				);
 		}
+
 		return await this.taskboardRepository.delete(id);
 	}
 }

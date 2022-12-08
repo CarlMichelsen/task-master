@@ -8,6 +8,7 @@ import auth from "./endpoints/auth";
 import allUsers from "./endpoints/allUsers";
 import allTaskboards from "./endpoints/allTaskboards";
 import createUser from "./endpoints/createUser";
+import createTaskboard from "./endpoints/createTaskboard";
 
 // load environment variables
 config();
@@ -22,13 +23,16 @@ app.use(express.json());
 app.get("/health", healthcheck);
 
 // auth endpoint
-app.get("/auth", auth);
+app.post("/auth", auth);
 
 // allUsers endpoint
 app.get("/allUsers", allUsers);
 
 // test createUser endpoint
 app.post("/createUser", createUser);
+
+// test createTaskboard endpoint
+app.post("/createTaskboard", createTaskboard);
 
 // allTaskboards endpoint
 app.get("/allTaskboards", allTaskboards);
