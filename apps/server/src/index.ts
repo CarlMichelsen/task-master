@@ -9,7 +9,7 @@ config();
 
 const startup = new Date(Date.now());
 const app = express();
-const port = isNaN(Number(process.env.PORT)) ? 8080 : Number(process.env.PORT);
+const port = isNaN(Number(process.env.PORT)) ? 80 : Number(process.env.PORT);
 
 // health endpoint
 app.get("/health", (req: express.Request, res: express.Response) => {
