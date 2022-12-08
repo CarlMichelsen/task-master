@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prebuild": "copyfiles --all --error --up 2 src/public/**/* dist/public",
+    "prebuild": "copyfiles --all --error --up 2 src/public/ dist/",
     "build": "tsc",
     "dev": "nodemon ./src/index.ts",
     "start": "node dist",
