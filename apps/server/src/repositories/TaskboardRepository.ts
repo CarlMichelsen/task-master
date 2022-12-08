@@ -1,4 +1,4 @@
-import { Taskboard } from "../models/taskboard";
+import { Taskboard } from "../models/Taskboard";
 import { ITaskboardRepository } from "./ITaskboardRepository";
 
 export class TaskboardRepository implements ITaskboardRepository {

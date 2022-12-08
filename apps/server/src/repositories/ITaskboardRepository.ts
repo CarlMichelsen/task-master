@@ -1,4 +1,4 @@
-import { Taskboard } from "../models/taskboard";
+import { Taskboard } from "../models/Taskboard";
 
 export interface ITaskboardRepository {
 	getById(id: string): Promise<Taskboard | null>;
