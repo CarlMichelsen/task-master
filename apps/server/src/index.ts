@@ -12,10 +12,7 @@ import createUser from "./endpoints/createUser";
 import createTaskboard from "./endpoints/createTaskboard";
 
 // websocket imports
-/*import { WebSocketHandler } from "./websocket/WebSocketHandler";
-import { ClientToServerEvents } from "./websocket/eventHandlers/ClientToServerEvents";
-import { InterServerEvents } from "./websocket/eventHandlers/InterServerEvents";
-import { ServerToClientEvents } from "./websocket/eventHandlers/ServerToClientEvents";*/
+import { WebSocketHandler } from "./websocket/WebSocketHandler";
 
 // load environment variables
 config();
@@ -50,12 +47,9 @@ app.use("/", express.static(publicDir, { redirect: true }));
 
 // start webserver
 const httpServer: http.Server = new http.Server(app);
-/*const websocket = new WebSocketHandler(
-	new ClientToServerEvents(),
-	new InterServerEvents(),
-	new ServerToClientEvents()
-);*/
+const websocket = new WebSocketHandler(httpServer);
 httpServer.listen(port, () => {
 	console.log(`Server started on port ${port}`);
+	websocket.start();
 	startup.setDate(Date.now());
 });

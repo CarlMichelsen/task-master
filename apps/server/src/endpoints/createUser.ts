@@ -1,4 +1,4 @@
-import express from "express";
+import * as express from "express";
 import { CreateUserRequest } from "../dto/createUserRequest";
 import { UserService } from "../services/UserService";
 

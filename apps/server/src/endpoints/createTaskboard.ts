@@ -1,4 +1,4 @@
-import express from "express";
+import * as express from "express";
 import { CreateTaskboardRequest } from "../dto/createTaskboardRequest";
 import { TaskboardService } from "../services/TaskboardService";
 

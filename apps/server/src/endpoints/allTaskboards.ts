@@ -1,4 +1,4 @@
-import express from "express";
+import * as express from "express";
 import { TaskboardRepository } from "../repositories/TaskboardRepository";
 
 export default async (req: express.Request, res: express.Response) => {

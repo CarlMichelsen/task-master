@@ -5,8 +5,11 @@ export class WebsocketService {
 	static ready: boolean = true;
 
 	static connect(userId: string) {
-		this.io = io(undefined, {
+		const hostname = `${location.protocol}//${location.hostname}`;
+		console.log(hostname);
+		this.io = io(hostname, {
 			auth: { userId },
+			path: "/socket",
 		});
 	}
 }

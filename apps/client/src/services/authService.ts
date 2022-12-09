@@ -24,7 +24,7 @@ export class AuthService {
 	}
 
 	static async getIdentity(): Promise<User> {
-		const localIdentity = this.getLocalIdentity();
+		const localIdentity = { identity: this.getLocalIdentity() };
 		const response = await axios.post<User>("/auth", localIdentity);
 		this.user = response.data;
 		WebsocketService.connect(this.user.id);
