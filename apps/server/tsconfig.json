@@ -3,10 +3,11 @@
         "module": "NodeNext",
         "moduleResolution": "NodeNext",
         "target": "ES2020",
-        "sourceMap": true,
+        "sourceMap": false,
         "outDir": "dist/",
         "allowJs": false,
         "strict": true
     },
-    "include": ["src/**/*"]
+    "include": ["src/**/*"],
+    "files": [".d.ts"]
 }

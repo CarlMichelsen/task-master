@@ -1,5 +1,6 @@
-import express from "express";
-import path from "path";
+import * as express from "express";
+import * as http from "http";
+import * as path from "path";
 import { config } from "dotenv";
 
 // endpoints
@@ -10,11 +11,17 @@ import allTaskboards from "./endpoints/allTaskboards";
 import createUser from "./endpoints/createUser";
 import createTaskboard from "./endpoints/createTaskboard";
 
+// websocket imports
+/*import { WebSocketHandler } from "./websocket/WebSocketHandler";
+import { ClientToServerEvents } from "./websocket/eventHandlers/ClientToServerEvents";
+import { InterServerEvents } from "./websocket/eventHandlers/InterServerEvents";
+import { ServerToClientEvents } from "./websocket/eventHandlers/ServerToClientEvents";*/
+
 // load environment variables
 config();
 
 const startup = new Date(Date.now());
-const app = express();
+const app = express.default();
 const port = isNaN(Number(process.env.PORT)) ? 80 : Number(process.env.PORT);
 
 app.use(express.json());
@@ -42,7 +49,13 @@ const publicDir = path.join(__dirname, "public");
 app.use("/", express.static(publicDir, { redirect: true }));
 
 // start webserver
-app.listen(port, () => {
+const httpServer: http.Server = new http.Server(app);
+/*const websocket = new WebSocketHandler(
+	new ClientToServerEvents(),
+	new InterServerEvents(),
+	new ServerToClientEvents()
+);*/
+httpServer.listen(port, () => {
 	console.log(`Server started on port ${port}`);
 	startup.setDate(Date.now());
 });

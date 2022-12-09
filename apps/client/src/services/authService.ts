@@ -3,6 +3,7 @@ import type { User } from "../models/user";
 
 import axios from "axios";
 import { readCookie, createCookie } from "../util/cookie";
+import { WebsocketService } from "./websocketService";
 
 export class AuthService {
 	static user: User | null = null;
@@ -26,6 +27,7 @@ export class AuthService {
 		const localIdentity = this.getLocalIdentity();
 		const response = await axios.post<User>("/auth", localIdentity);
 		this.user = response.data;
+		WebsocketService.connect(this.user.id);
 		return this.user;
 	}
 }
