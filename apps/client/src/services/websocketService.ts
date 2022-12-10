@@ -21,4 +21,8 @@ export class WebsocketService {
 		this.socket.on("login", login);
 		this.socket.on("disconnect", disconnect);
 	}
+
+	static disconnect() {
+		this.socket.disconnect();
+	}
 }

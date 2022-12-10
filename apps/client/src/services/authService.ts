@@ -33,11 +33,17 @@ export class AuthService {
 	): Promise<void> {
 		const identity = this.getLocalIdentity();
 		const authRequest: AuthRequest = {
-			id: identity?.userId,
+			id: identity?.userId ?? null,
 			username,
 			taskboardUrl,
 		};
+		console.log("auth attempt:", authRequest);
 		WebsocketService.connect(authRequest);
+	}
+
+	static logout() {
+		WebsocketService.disconnect();
+		AuthService.reportAuthChange(null);
 	}
 
 	public static listen(

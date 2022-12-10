@@ -2,7 +2,7 @@ import { User } from "../models/User";
 import { IUserRepository } from "./IUserRepository";
 
 export class UserRepository implements IUserRepository {
-	static users: Map<string, User> = new Map();
+	static users: Map<string, User> = new Map<string, User>();
 
 	async getById(id: string): Promise<User | null> {
 		return UserRepository.users.get(id) ?? null;
