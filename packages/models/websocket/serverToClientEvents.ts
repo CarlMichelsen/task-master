@@ -1,5 +1,7 @@
+import { AuthResponse } from "models/auth/authResponse";
+
 export interface IServerToClientEvents {
 	noArg: () => void;
-	basicEmit: (a: number, b: string) => void;
+	login: (authResponse: AuthResponse) => void;
 	withAck: (d: string, callback: (e: number) => void) => void;
 }

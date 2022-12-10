@@ -1,23 +1,28 @@
 import * as io from "socket.io";
 import * as http from "http";
-import { IClientToServerEvents } from "./eventInterfaces/IClientToServerEvents";
+
+import { login } from "./routes/login";
+import { join } from "./routes/join";
+import { leave } from "./routes/leave";
+
 import { IInterServerEvents } from "./eventInterfaces/IInterServerEvents";
-import { IServerToClientEvents } from "./eventInterfaces/IServerToClientEvents";
+import { IClientToServerEvents } from "models/websocket/clientToServerEvents";
+import { IServerToClientEvents } from "models/websocket/serverToClientEvents";
 import { ISocketData } from "./eventInterfaces/ISocketData";
 
 export class WebSocketHandler {
 	io: io.Server<
 		IClientToServerEvents,
-		IInterServerEvents,
 		IServerToClientEvents,
+		IInterServerEvents,
 		ISocketData
 	>;
 
 	constructor(httpServer: http.Server) {
 		this.io = new io.Server<
 			IClientToServerEvents,
-			IInterServerEvents,
 			IServerToClientEvents,
+			IInterServerEvents,
 			ISocketData
 		>(httpServer, {
 			path: "/socket",
@@ -25,8 +30,10 @@ export class WebSocketHandler {
 	}
 
 	async start(): Promise<void> {
-		this.io.on("connection", (socket) => {
-			console.log("connection", socket.handshake.auth);
+		this.io.on("connection", async (socket) => {
+			login(socket);
+			join(socket);
+			leave(socket);
 		});
 	}
 }

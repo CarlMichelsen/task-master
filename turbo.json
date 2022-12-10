@@ -1,20 +1,20 @@
 {
-    "$schema": "https://turborepo.org/schema.json",
-    "pipeline": {
-        "build": {
-            "dependsOn": ["^build"],
-            "outputs": ["dist/**"]
-        },
-        "dev": {
-            "cache": false
-        },
-        "client#build": {
-            "cache": false
-        },
-        "server#build": {
-            "cache": false,
-            "dependsOn": ["client#build"],
-            "outputs": ["dist/**"]
-        }
-    }
+	"$schema": "https://turborepo.org/schema.json",
+	"pipeline": {
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": ["dist/**"]
+		},
+		"dev": {
+			"cache": false
+		},
+		"client#build": {
+			"cache": false
+		},
+		"server#build": {
+			"cache": false,
+			"dependsOn": ["client#build"],
+			"outputs": ["dist/**"]
+		}
+	}
 }

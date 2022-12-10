@@ -5,7 +5,6 @@ import { config } from "dotenv";
 
 // endpoints
 import healthcheck from "./endpoints/healthcheck";
-import auth from "./endpoints/auth";
 import allUsers from "./endpoints/allUsers";
 import allTaskboards from "./endpoints/allTaskboards";
 import createUser from "./endpoints/createUser";
@@ -26,14 +25,11 @@ app.use(express.json());
 // health endpoint
 app.get("/health", healthcheck);
 
-// auth endpoint
-app.post("/auth", auth);
+// test createUser endpoint
+app.post("/createUser", createUser);
 
 // allUsers endpoint
 app.get("/allUsers", allUsers);
-
-// test createUser endpoint
-app.post("/createUser", createUser);
 
 // test createTaskboard endpoint
 app.post("/createTaskboard", createTaskboard);

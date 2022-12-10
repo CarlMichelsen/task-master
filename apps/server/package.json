@@ -1,41 +1,42 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "prebuild": "copyfiles --all --error --up 1 src/public/**/**/** dist/",
-    "build": "tsc",
-    "dev": "nodemon ./src/index.ts",
-    "start": "node dist",
-    "lint": "eslint",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/CarlMichelsen/task-master.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/CarlMichelsen/task-master/issues"
-  },
-  "homepage": "https://github.com/CarlMichelsen/task-master#readme",
-  "devDependencies": {
-    "@types/express": "^4.17.14",
-    "@types/node": "^18.11.11",
-    "@types/uuid": "^9.0.0",
-    "copyfiles": "^2.4.1",
-    "eslint": "^8.29.0",
-    "nodemon": "^2.0.20",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.3"
-  },
-  "dependencies": {
-    "dotenv": "^16.0.3",
-    "express": "^4.18.2",
-    "socket.io": "^4.5.4",
-    "uuid": "^9.0.0"
-  }
+	"name": "server",
+	"version": "1.0.0",
+	"description": "",
+	"main": "index.js",
+	"scripts": {
+		"prebuild": "copyfiles --all --error --up 1 src/public/**/**/** dist/",
+		"build": "tsc",
+		"dev": "nodemon ./src/index.ts",
+		"start": "node dist",
+		"lint": "eslint",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/CarlMichelsen/task-master.git"
+	},
+	"keywords": [],
+	"author": "Carl Lilholm Michelsen",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/CarlMichelsen/task-master/issues"
+	},
+	"homepage": "https://github.com/CarlMichelsen/task-master#readme",
+	"devDependencies": {
+		"@types/express": "^4.17.14",
+		"@types/node": "^18.11.11",
+		"@types/uuid": "^9.0.0",
+		"copyfiles": "^2.4.1",
+		"eslint": "^8.29.0",
+		"nodemon": "^2.0.20",
+		"ts-node": "^10.9.1",
+		"typescript": "^4.9.3",
+		"models": "*"
+	},
+	"dependencies": {
+		"dotenv": "^16.0.3",
+		"express": "^4.18.2",
+		"socket.io": "^4.5.4",
+		"uuid": "^9.0.0"
+	}
 }
