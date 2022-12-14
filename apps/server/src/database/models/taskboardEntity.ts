@@ -1,5 +1,6 @@
-import { Sequelize, DataTypes } from "sequelize";
+import { Sequelize, DataTypes, BelongsToOptions } from "sequelize";
 import { Configuration } from "../../configuration";
+import { UserEntity } from "./userEntity";
 const sequelize = new Sequelize(Configuration.databaseUrl ?? ""); // TODO: change database type to string
 
 const TaskboardEntity = sequelize.define("TaskboardEntity", {
@@ -28,15 +29,15 @@ const TaskboardEntity = sequelize.define("TaskboardEntity", {
 	owner_id: {
 		type: DataTypes.UUID,
 		allowNull: false,
+		references: {
+			model: UserEntity,
+		},
 	},
 });
 
-TaskboardEntity.belongsTo(sequelize.models.UserEntity, {
-	foreignKey: "owner_id",
-});
-
-TaskboardEntity.belongsToMany(sequelize.models.UserEntity, {
-	through: "UserTaskboardEntity",
+TaskboardEntity.belongsTo(UserEntity, {
+	foreignKey: "id",
+	keyType: DataTypes.UUID,
 });
 
 export { TaskboardEntity };

@@ -4,6 +4,7 @@ import * as path from "path";
 
 // configuration
 import { Configuration } from "./configuration";
+import { syncDb } from "./database";
 
 // endpoints
 import healthcheck from "./endpoints/healthcheck";
@@ -46,8 +47,10 @@ app.use("/", express.static(publicDir, { redirect: true }));
 // start webserver
 const httpServer: http.Server = new http.Server(app);
 const websocket = new WebSocketHandler(httpServer);
-httpServer.listen(port, () => {
-	console.log(`Server started on port ${port}`);
-	websocket.start();
-	startup.setDate(Date.now());
+syncDb(() => {
+	httpServer.listen(port, () => {
+		console.log(`Server started on port ${port}`);
+		websocket.start();
+		startup.setDate(Date.now());
+	});
 });
