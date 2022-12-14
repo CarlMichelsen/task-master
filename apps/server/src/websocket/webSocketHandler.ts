@@ -1,7 +1,6 @@
 import * as io from "socket.io";
 import * as http from "http";
 
-import { login } from "./routes/login/index";
 import { join } from "./routes/join";
 import { leave } from "./routes/leave";
 
@@ -31,7 +30,6 @@ export class WebSocketHandler {
 
 	async start(): Promise<void> {
 		this.io.on("connection", async (socket) => {
-			login(socket);
 			join(socket);
 			leave(socket);
 		});

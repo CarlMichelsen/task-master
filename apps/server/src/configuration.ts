@@ -5,8 +5,8 @@ export class Configuration {
 		config();
 	}
 
-	static get databaseUrl(): string | undefined {
-		return process.env.DATABASE_URL;
+	static get databaseUrl(): string {
+		return process.env.DATABASE_URL ?? "";
 	}
 
 	static get port(): number {
