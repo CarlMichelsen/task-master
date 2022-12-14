@@ -1,7 +1,9 @@
 import * as express from "express";
 import * as http from "http";
 import * as path from "path";
-import { config } from "dotenv";
+
+// configuration
+import { Configuration } from "./configuration";
 
 // endpoints
 import healthcheck from "./endpoints/healthcheck";
@@ -14,11 +16,11 @@ import createTaskboard from "./endpoints/createTaskboard";
 import { WebSocketHandler } from "./websocket/WebSocketHandler";
 
 // load environment variables
-config();
+Configuration.init();
 
 const startup = new Date(Date.now());
 const app = express.default();
-const port = isNaN(Number(process.env.PORT)) ? 80 : Number(process.env.PORT);
+const port = Configuration.port;
 
 app.use(express.json());
 

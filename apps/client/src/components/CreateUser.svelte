@@ -10,13 +10,13 @@
 </script>
 
 <div>
-	<h2 class="text-xl">Create User</h2>
-
+	<label class="text-xl" for="username-input">Create User</label>
+	<br />
 	<input
 		type="text"
 		name="username"
 		id="username-input"
-		class="py-auto text-lg w-80 h-12 text-center"
+		class="text-md w-80 h-12 text-center"
 		bind:value={username}
 		on:submit|preventDefault={connect}
 	/>

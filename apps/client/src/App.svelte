@@ -12,12 +12,6 @@
 	onDestroy(() => AuthService.delete("App"));
 
 	console.log("Hello, World!");
-	/*
-	<h1>Hello, World!</h1>
-	<p>{userData?.username}</p>
-	<input type="text" name="username" id="username" bind:value={username} />
-	<button on:click={connect}>Connect</button>
-	*/
 </script>
 
 <main class="mx-auto container">

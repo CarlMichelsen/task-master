@@ -27,5 +27,8 @@
 	"bugs": {
 		"url": "https://github.com/CarlMichelsen/task-master/issues"
 	},
-	"homepage": "https://github.com/CarlMichelsen/task-master#readme"
+	"homepage": "https://github.com/CarlMichelsen/task-master#readme",
+	"dependencies": {
+		"pg": "^8.8.0"
+	}
 }
