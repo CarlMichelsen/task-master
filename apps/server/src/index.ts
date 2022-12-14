@@ -14,7 +14,7 @@ import createUser from "./endpoints/createUser";
 import createTaskboard from "./endpoints/createTaskboard";
 
 // websocket imports
-import { WebSocketHandler } from "./websocket/WebSocketHandler";
+import { WebSocketHandler } from "./websocket/W8bSocketHandler";
 
 // load environment variables
 Configuration.init();

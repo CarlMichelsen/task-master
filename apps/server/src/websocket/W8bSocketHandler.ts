@@ -1,7 +1,7 @@
 import * as io from "socket.io";
 import * as http from "http";
 
-import { login } from "./routes/login";
+import { login } from "./routes/login/index";
 import { join } from "./routes/join";
 import { leave } from "./routes/leave";
 
