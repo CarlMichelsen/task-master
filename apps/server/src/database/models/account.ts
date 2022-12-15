@@ -11,7 +11,8 @@ export interface AccountAttributes {
 	fullname: string;
 	email: string;
 	passwordHash: string;
-	verified: boolean;
+	passwordSalt: string;
+	email_verified: boolean;
 }
 
 export interface AccountCreationAttributes extends AccountAttributes {}
@@ -39,7 +40,11 @@ const Account = sequelize.define<
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		verified: {
+		passwordSalt: {
+			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		email_verified: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false,
 			allowNull: false,

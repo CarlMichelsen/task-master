@@ -56,9 +56,4 @@ const Taskboard = sequelize.define<
 	modelOptions
 );
 
-Taskboard.belongsTo(User, {
-	foreignKey: "id",
-	keyType: DataTypes.UUID,
-});
-
 export { Taskboard };

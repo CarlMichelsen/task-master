@@ -1,6 +1,5 @@
-import { ClientUser } from "../user/clientUser";
-
 export interface AuthResponse {
-	authenticated: boolean;
-	clientUser: ClientUser | null;
+	complete: boolean;
+	errors: string[];
+	jwt: string | null;
 }

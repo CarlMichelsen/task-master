@@ -2,6 +2,9 @@ import * as express from "express";
 import * as http from "http";
 import * as path from "path";
 
+// routes
+import routes from "./api";
+
 // configuration
 import { Configuration } from "./configuration";
 import { syncDb } from "./database";
@@ -21,6 +24,8 @@ app.use(express.json());
 // serve website
 const publicDir = path.join(__dirname, "public");
 app.use("/", express.static(publicDir, { redirect: true }));
+
+app.use("/api/v1", routes);
 
 // start webserver
 const httpServer: http.Server = new http.Server(app);

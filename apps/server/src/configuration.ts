@@ -6,10 +6,17 @@ export class Configuration {
 	}
 
 	static get databaseUrl(): string {
-		return process.env.DATABASE_URL ?? "";
+		if (!process.env.DATABASE_URL) throw new Error("No DATABASE_URL");
+		return process.env.DATABASE_URL;
 	}
 
 	static get port(): number {
 		return isNaN(Number(process.env.PORT)) ? 80 : Number(process.env.PORT);
+	}
+
+	static get authorizationSecret(): string {
+		if (!process.env.AUTHORIZATION_SECRET)
+			throw new Error("No AUTHORIZATION_SECRET");
+		return process.env.AUTHORIZATION_SECRET;
 	}
 }

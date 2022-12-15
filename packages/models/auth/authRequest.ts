@@ -1,5 +1,4 @@
 export interface AuthRequest {
-	id: string | null;
-	username: string | null;
-	taskboardUrl: string | null;
+	email: string;
+	password: string;
 }

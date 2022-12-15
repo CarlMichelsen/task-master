@@ -47,7 +47,7 @@ const User = sequelize.define<Model<UserAttributes, UserCreationAttributes>>(
 );
 
 User.belongsTo(Account, {
-	foreignKey: "id",
+	foreignKey: "account_id",
 	keyType: DataTypes.UUID,
 });
 

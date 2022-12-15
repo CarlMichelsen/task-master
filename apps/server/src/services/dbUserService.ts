@@ -7,14 +7,23 @@ export class DbUserService {
 		return res?.dataValues ?? null;
 	}
 
-	async createUser(user: UserAttributes): Promise<void> {
-		if (!user.account_id)
-			throw new Error("Attempted to create a user without an account_id");
-		const account = await Account.findByPk(user.account_id);
+	async getUserByAccountId(id: string): Promise<UserAttributes | null> {
+		const res = await User.findOne({ where: { account_id: id } });
+		return res?.dataValues ?? null;
+	}
 
-		if (!account)
-			throw new Error("Attempted to create a user without an existing account");
+	async usernameExists(username: string): Promise<boolean> {
+		const res = await User.findOne({ where: { username } });
+		return !!res;
+	}
 
-		await User.create(user);
+	async createUser(user: UserAttributes): Promise<boolean> {
+		try {
+			await User.create(user);
+			return true;
+		} catch (error) {
+			console.error("createUser", error);
+			return false;
+		}
 	}
 }

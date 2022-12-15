@@ -43,21 +43,21 @@ const UserTaskboard = sequelize.define<
 );
 
 UserTaskboard.belongsTo(User, {
-	foreignKey: "id",
+	foreignKey: "user_id",
 	keyType: DataTypes.UUID,
 });
 
 UserTaskboard.belongsTo(Taskboard, {
-	foreignKey: "id",
+	foreignKey: "taskboard_id",
 	keyType: DataTypes.UUID,
 });
 
 Taskboard.belongsToMany(User, {
-	through: "UserTaskboard",
+	through: UserTaskboard,
 });
 
 User.belongsToMany(Taskboard, {
-	through: "UserTaskboard",
+	through: UserTaskboard,
 });
 
 export { UserTaskboard };
