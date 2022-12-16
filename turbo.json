@@ -16,6 +16,9 @@
 			"dependsOn": ["client#build"],
 			"outputs": ["dist/**"],
 			"env": [".env"]
+		},
+		"server#dev": {
+			"env": [".env"]
 		}
 	}
 }

@@ -19,10 +19,6 @@ const getAllSchemas = async (sql: Sequelize): Promise<string[]> => {
 };
 
 export const syncDb = async (callback: () => void, skip: boolean = false) => {
-	if (skip) {
-		callback();
-		return;
-	}
 	const options: SyncOptions = { force: false, alter: { drop: false } };
 	const sequelize = new Sequelize(Configuration.databaseUrl);
 
@@ -33,6 +29,11 @@ export const syncDb = async (callback: () => void, skip: boolean = false) => {
 			benchmark: true,
 		});
 		console.log("task", "created schema");
+	}
+
+	if (skip) {
+		callback();
+		return;
 	}
 
 	await Account.sync(options);

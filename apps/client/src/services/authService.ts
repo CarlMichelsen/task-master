@@ -1,63 +1,43 @@
-import type { LocalIdentity } from "../models/localIdentity";
-import type { ClientUser } from "models/user/clientUser";
+import axios from "axios";
+import { readCookie, createCookie, eraseCookie } from "../util/cookie";
+import type { AuthResponse } from "models/auth/authResponse";
 import type { AuthRequest } from "models/auth/authRequest";
 
-import { readCookie, createCookie } from "../util/cookie";
-import { WebsocketService } from "./websocketService";
-
 export class AuthService {
-	static user: ClientUser | null = null;
-	private static authChange = new Map<
-		string,
-		(user: ClientUser | null) => void
-	>();
+	private static jwtString: string | null;
+	public static get jwt(): string | null {
+		if (!this.jwtString) this.jwtString = readCookie("jwt") || null;
+		return this.jwtString;
+	}
+	public static onStateChange: (jwt: string | null) => void = (jwt: string) => {
+		console.log("default auth change function triggered");
+	};
 
-	public static getLocalIdentity(): LocalIdentity | null {
-		const identityCookieString = readCookie("identity");
-		if (!identityCookieString) return null;
-		const identity = JSON.parse(identityCookieString);
-		return identity;
+	private static registerJwt(jwt: string) {
+		createCookie("jwt", jwt, 14);
+		this.jwtString = jwt;
+		this.onStateChange(jwt);
 	}
 
-	public static setLocalIdentity(
-		identity: LocalIdentity,
-		timeoutDays: number = 14
-	): void {
-		const identityString = JSON.stringify(identity);
-		createCookie("identity", identityString, timeoutDays);
+	public static async login(
+		email: string,
+		password: string
+	): Promise<AuthResponse> {
+		const loginRequest: AuthRequest = { email, password };
+		const res = await axios.post<AuthResponse>(
+			"/api/v1/auth/login",
+			loginRequest
+		);
+		if (res.status !== 200 && res.status !== 400)
+			console.error("Error during login");
+
+		if (res.data.complete && res.data.jwt) this.registerJwt(res.data.jwt);
+		return res.data;
 	}
 
-	static async authorize(
-		username: string | null = null,
-		taskboardUrl: string | null = null
-	): Promise<void> {
-		const identity = this.getLocalIdentity();
-		const authRequest: AuthRequest = {
-			id: identity?.userId ?? null,
-			username,
-			taskboardUrl,
-		};
-		console.log("auth attempt:", authRequest);
-		WebsocketService.connect(authRequest);
-	}
-
-	static logout() {
-		WebsocketService.disconnect();
-		AuthService.reportAuthChange(null);
-	}
-
-	public static listen(
-		name: string,
-		action: (user: ClientUser | null) => void
-	) {
-		AuthService.authChange.set(name, action);
-	}
-
-	public static delete(name: string) {
-		AuthService.authChange.delete(name);
-	}
-
-	public static reportAuthChange(user: ClientUser | null) {
-		this.authChange.forEach((authFunction) => authFunction(user));
+	public static logout() {
+		eraseCookie("jwt");
+		this.jwtString = null;
+		this.onStateChange(null);
 	}
 }

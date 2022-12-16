@@ -1,20 +1,25 @@
 <script lang="ts">
-	import { onDestroy } from "svelte";
-	import type { ClientUser } from "models/user/clientUser";
-	import { AuthService } from "./services/authService";
 	import Header from "./components/Header.svelte";
-	import Content from "./components/Content.svelte";
-	let userData: ClientUser | null = null;
-	let username: string = "";
-
-	const change = (user: ClientUser) => (userData = user);
-	AuthService.listen("App", change);
-	onDestroy(() => AuthService.delete("App"));
+	import { AuthService } from "./services/authService";
+	let jwt = AuthService.jwt;
+	AuthService.onStateChange = (newJwt: string) => (jwt = newJwt);
 
 	console.log("Hello, World!");
+	const login = () => {
+		AuthService.login("carl.lilholm@protonmail.com", "12345678");
+	};
+	const logout = () => {
+		AuthService.logout();
+	};
 </script>
 
 <main class="mx-auto container">
 	<Header />
-	<Content {userData} />
+
+	<p>NODE_ENV: {process.env.NODE_ENV}</p>
+
+	<p>{jwt}</p>
+	<br />
+	<button class="py-4 px-2 bg-slate-400" on:click={login}>login</button>
+	<button class="py-4 px-2 bg-slate-400" on:click={logout}>logout</button>
 </main>

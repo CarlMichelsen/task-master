@@ -1,25 +1,30 @@
-export const createCookie = (name: string,value :string, days:number): string => {
+export const createCookie = (
+	name: string,
+	value: string,
+	days: number
+): string => {
 	let expires = "";
-    if (!!days) {
+	if (!!days) {
 		const date = new Date();
-		date.setTime(date.getTime()+(days*24*60*60*1000));
-		expires = "; expires="+date.toUTCString();
+		date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+		expires = "; expires=" + date.toUTCString();
 	}
-  const wholeCookie = `${name}=${value};SameSite=None;Secure${expires}`;
+	const wholeCookie = `${name}=${value};SameSite=None;Secure${expires}`;
 	document.cookie = wholeCookie;
-  return wholeCookie;
-}
+	return wholeCookie;
+};
 
-export const readCookie = (name: string): string|null => {
+export const readCookie = (name: string): string | null => {
 	const nameEQ = name + "=";
-	const ca = document.cookie.split(';');
-	for(let i=0; i < ca.length; i++) {
+	const ca = document.cookie.split(";");
+	for (let i = 0; i < ca.length; i++) {
 		const c = ca[i].trim();
-		if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);
+		if (c.indexOf(nameEQ) === 0)
+			return c.substring(nameEQ.length, c.length) || null;
 	}
 	return null;
-}
+};
 
 export const eraseCookie = (name: string): void => {
-    createCookie(name,"",-1);
-}
+	createCookie(name, "", -1);
+};

@@ -10,7 +10,7 @@ const authRouter = Router();
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 authRouter.post<{}, {}, RegisterRequest>("/register", async (req, res) => {
-	const constantTime = delay(200);
+	const constantTime = delay(1000);
 	try {
 		const authService = new AuthService();
 		const response: AuthResponse = await authService.register(req.body);
@@ -24,12 +24,15 @@ authRouter.post<{}, {}, RegisterRequest>("/register", async (req, res) => {
 });
 
 authRouter.post<{}, {}, AuthRequest>("/login", async (req, res) => {
+	const constantTime = delay(200);
 	try {
 		const authService = new AuthService();
 		const response: AuthResponse = await authService.login(req.body);
+		await constantTime;
 		res.status(response.complete ? 200 : 400).send(response);
 	} catch (error) {
 		console.error(error);
+		await constantTime;
 		res.status(500).send("Internal server error");
 	}
 });
