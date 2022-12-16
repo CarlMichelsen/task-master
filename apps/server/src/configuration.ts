@@ -10,6 +10,10 @@ export class Configuration {
 		return process.env.DATABASE_URL;
 	}
 
+	static get production(): boolean {
+		return process.env.NODE_ENV === "production" ? true : false;
+	}
+
 	static get port(): number {
 		return isNaN(Number(process.env.PORT)) ? 80 : Number(process.env.PORT);
 	}

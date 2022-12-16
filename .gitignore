@@ -1,2 +1,4 @@
+.env
+
 dist-webserver
 node_modules/**/*

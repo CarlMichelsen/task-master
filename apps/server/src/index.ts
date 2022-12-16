@@ -14,6 +14,8 @@ import { WebSocketHandler } from "./websocket/webSocketHandler";
 
 // load environment variables
 Configuration.init();
+console.log("IS_PRODUCTION", Configuration.production);
+console.log("test", process.env.NODE_ENV);
 
 const startup = new Date(Date.now());
 const app = express.default();

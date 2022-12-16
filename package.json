@@ -9,7 +9,7 @@
 		"test": "turbo run test",
 		"lint": "turbo run lint",
 		"dev": "turbo run dev --no-daemon",
-		"start": "node ./apps/server/dist/index.js"
+		"start": "NODE_ENV=production node ./apps/server/dist/index.js"
 	},
 	"devDependencies": {
 		"turbo": "^1.6.3"
