@@ -6,7 +6,7 @@
 
 	console.log("Hello, World!");
 	const login = () => {
-		AuthService.login("carl.lilholm@protonmail.com", "12345678");
+		AuthService.login("test@mail.com", "12345678");
 	};
 	const logout = () => {
 		AuthService.logout();
