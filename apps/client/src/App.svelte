@@ -43,6 +43,6 @@
 
 	<p class="break-all">JWT: "{jwt}"</p>
 	<br />
-	<button class="py-4 px-2 bg-slate-400" on:click={login}>login</button>
-	<button class="py-4 px-2 bg-slate-400" on:click={logout}>logout</button>
+	<button class="py-4 px-2 bg-slate-600" on:click={login}>login</button>
+	<button class="py-4 px-2 bg-slate-600" on:click={logout}>logout</button>
 </main>
