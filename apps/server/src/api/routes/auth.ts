@@ -8,6 +8,7 @@ import { AuthService } from "../../services/authService";
 const authRouter = Router();
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+const internalErrorMessage: string = "Internal server error";
 
 authRouter.post<{}, {}, RegisterRequest>("/register", async (req, res) => {
 	const constantTime = delay(1000);
@@ -19,7 +20,18 @@ authRouter.post<{}, {}, RegisterRequest>("/register", async (req, res) => {
 	} catch (error) {
 		console.error(error);
 		await constantTime;
-		res.status(500).send("Internal server error");
+		res.status(500).send(internalErrorMessage);
+	}
+});
+
+authRouter.post<{}, {}, {}>("/valid", (req, res) => {
+	try {
+		const authorized = !!req.claims;
+		authorized ? res.status(200) : res.status(401);
+		res.send(authorized);
+	} catch (error) {
+		console.error(error);
+		res.status(500).send(internalErrorMessage);
 	}
 });
 
@@ -33,7 +45,7 @@ authRouter.post<{}, {}, AuthRequest>("/login", async (req, res) => {
 	} catch (error) {
 		console.error(error);
 		await constantTime;
-		res.status(500).send("Internal server error");
+		res.status(500).send(internalErrorMessage);
 	}
 });
 

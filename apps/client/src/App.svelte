@@ -2,7 +2,30 @@
 	import Header from "./components/Header.svelte";
 	import { AuthService } from "./services/authService";
 	let jwt = AuthService.jwt;
-	AuthService.onStateChange = (newJwt: string) => (jwt = newJwt);
+	AuthService.onStateChange = async (newJwt: string, fresh: boolean) => {
+		if (fresh) {
+			jwt = newJwt;
+			return;
+		}
+
+		if (!newJwt) {
+			jwt = null;
+			return;
+		}
+
+		try {
+			const authorized = await AuthService.isAuthorized();
+			if (authorized) {
+				jwt = newJwt;
+			} else {
+				jwt = null;
+			}
+		} catch (error) {
+			jwt = null;
+		}
+	};
+
+	AuthService.forceRunStateChangeAction();
 
 	console.log("Hello, World!");
 	const login = () => {
@@ -18,7 +41,7 @@
 
 	<p>NODE_ENV: {process.env.NODE_ENV}</p>
 
-	<p>{jwt}</p>
+	<p class="break-all">JWT: "{jwt}"</p>
 	<br />
 	<button class="py-4 px-2 bg-slate-400" on:click={login}>login</button>
 	<button class="py-4 px-2 bg-slate-400" on:click={logout}>logout</button>

@@ -11,9 +11,19 @@ export class DbAccountService {
 		return res?.dataValues ?? null;
 	}
 
+	async deleteAccountById(id: string): Promise<boolean> {
+		try {
+			const rows = await Account.destroy({ where: { id } });
+			return rows > 0;
+		} catch (error) {
+			console.error("deleteAccountById", error);
+			return false;
+		}
+	}
+
 	async createAccount(account: AccountAttributes): Promise<boolean> {
 		try {
-			const res = await Account.create(account);
+			await Account.create(account);
 			return true;
 		} catch (error) {
 			console.error("createAccount", error);

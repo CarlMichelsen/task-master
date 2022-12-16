@@ -1,6 +1,7 @@
 import * as express from "express";
 import * as http from "http";
 import * as path from "path";
+import * as cors from "cors";
 
 // routes
 import routes from "./api";
@@ -18,6 +19,12 @@ Configuration.init();
 const startup = new Date(Date.now());
 const app = express.default();
 const port = Configuration.port;
+const devCorsOptions: cors.CorsOptions = {
+	origin: "http://localhost:3000",
+	optionsSuccessStatus: 200,
+};
+
+app.use(cors.default(Configuration.production ? undefined : devCorsOptions));
 
 app.use(express.json());
 

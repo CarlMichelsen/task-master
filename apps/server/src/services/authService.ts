@@ -84,7 +84,9 @@ export class AuthService {
 
 	public authenticate(jwtToken: string): JwtClaims | null {
 		if (!jwtToken) return null;
-		const decoded = jwt.verify(jwtToken, Configuration.authorizationSecret);
+		const decoded = jwt.verify(jwtToken, Configuration.authorizationSecret, {
+			algorithms: ["HS512"],
+		});
 		return decoded ? (decoded as JwtClaims) : null;
 	}
 
@@ -123,10 +125,18 @@ export class AuthService {
 			};
 			const createdUser = await this.userService.createUser(user);
 
-			if (!createdUser)
-				throw new Error(
-					"Failed to create account-user pair during registration"
+			if (!createdUser) {
+				const cleanedUp = await this.accountService.deleteAccountById(
+					account.id
 				);
+				const errMsg = cleanedUp
+					? "Account was deleted again"
+					: `Failed to delete the account. There is now an orphan account in exsistence ${account.id}`;
+
+				throw new Error(
+					`Failed to create user for account during registration. ${errMsg}`
+				);
+			}
 
 			res.jwt = this.createToken(account, user);
 			res.complete = true;
@@ -182,6 +192,7 @@ export class AuthService {
 		};
 
 		const token = jwt.sign(claims, Configuration.authorizationSecret, {
+			algorithm: "HS512",
 			expiresIn: "12h",
 		});
 
