@@ -14,8 +14,8 @@ import { WebSocketHandler } from "./websocket/webSocketHandler";
 
 // load environment variables
 Configuration.init();
-console.log("IS_PRODUCTION", Configuration.production);
-console.log("test", process.env.NODE_ENV);
+console.log("IS_PRODUCTION", Configuration.databaseUrl);
+console.log("test", process.env.databaseUrl);
 
 const startup = new Date(Date.now());
 const app = express.default();
@@ -38,4 +38,4 @@ syncDb(() => {
 		websocket.start();
 		startup.setDate(Date.now());
 	});
-});
+}, !Configuration.production); // skip database sync in dev mode
