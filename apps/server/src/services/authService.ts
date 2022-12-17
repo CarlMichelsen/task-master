@@ -16,6 +16,7 @@ import { AccountAttributes } from "../database/models/account";
 import { RegisterRequest } from "models/auth/registerRequest";
 import { AuthResponse } from "models/auth/authResponse";
 import { AuthRequest } from "models/auth/authRequest";
+import { SelfService } from "./selfService";
 
 export interface JwtClaims extends JwtPayload {
 	userId: string;
@@ -28,6 +29,7 @@ export interface JwtClaims extends JwtPayload {
 export class AuthService {
 	private accountService = new DbAccountService();
 	private userService = new DbUserService();
+	private selfService = new SelfService();
 	private valid = new AuthValidationService(
 		this.accountService,
 		this.userService
@@ -40,6 +42,7 @@ export class AuthService {
 			complete: false,
 			errors: [],
 			jwt: null,
+			user: null,
 		};
 
 		const validEmail = await this.valid.validateEmail(email);
@@ -73,6 +76,7 @@ export class AuthService {
 				return res;
 			}
 			res.jwt = this.createToken(account, user);
+			res.user = this.selfService.getClientUserFromUser(user);
 			res.complete = true;
 			console.log(`"${user.username}" logged in with email ${account.email}`);
 			return res;
@@ -95,6 +99,7 @@ export class AuthService {
 			complete: false,
 			errors: [],
 			jwt: null,
+			user: null,
 		};
 
 		const validation = await this.registerRequestValidation(request);
@@ -139,6 +144,7 @@ export class AuthService {
 			}
 
 			res.jwt = this.createToken(account, user);
+			res.user = this.selfService.getClientUserFromUser(user);
 			res.complete = true;
 			console.log(
 				`"New registration by ${user.username}" with email "${account.email}"`

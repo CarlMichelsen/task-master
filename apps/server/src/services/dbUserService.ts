@@ -1,4 +1,3 @@
-import { Account } from "../database/models/account";
 import { User, UserAttributes } from "../database/models/user";
 
 export class DbUserService {
