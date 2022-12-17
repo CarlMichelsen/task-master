@@ -16,7 +16,7 @@ import { AccountAttributes } from "../database/models/account";
 import { RegisterRequest } from "models/auth/registerRequest";
 import { AuthResponse } from "models/auth/authResponse";
 import { AuthRequest } from "models/auth/authRequest";
-import { SelfService } from "./selfService";
+import { ClientUser } from "models/user/clientUser";
 
 export interface JwtClaims extends JwtPayload {
 	userId: string;
@@ -29,7 +29,6 @@ export interface JwtClaims extends JwtPayload {
 export class AuthService {
 	private accountService = new DbAccountService();
 	private userService = new DbUserService();
-	private selfService = new SelfService();
 	private valid = new AuthValidationService(
 		this.accountService,
 		this.userService
@@ -76,7 +75,7 @@ export class AuthService {
 				return res;
 			}
 			res.jwt = this.createToken(account, user);
-			res.user = this.selfService.getClientUserFromUser(user);
+			res.user = this.getClientUserFromUser(user);
 			res.complete = true;
 			console.log(`"${user.username}" logged in with email ${account.email}`);
 			return res;
@@ -144,7 +143,7 @@ export class AuthService {
 			}
 
 			res.jwt = this.createToken(account, user);
-			res.user = this.selfService.getClientUserFromUser(user);
+			res.user = this.getClientUserFromUser(user);
 			res.complete = true;
 			console.log(
 				`"New registration by ${user.username}" with email "${account.email}"`
@@ -165,6 +164,13 @@ export class AuthService {
 	}
 
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+	private getClientUserFromUser(user: UserAttributes): ClientUser {
+		return {
+			username: user.username,
+			online: user.online,
+		};
+	}
+
 	private async registerRequestValidation(
 		request: RegisterRequest
 	): Promise<ValidationResult> {

@@ -4,7 +4,6 @@ import { AuthRequest } from "models/auth/authRequest";
 
 import { Router, Request, Response } from "express";
 import { AuthService } from "../../services/authService";
-import { SelfService } from "../../services/selfService";
 import type { ClientUser } from "models/user/clientUser";
 
 // middleware
@@ -23,7 +22,7 @@ authRouter.post<{}, {}, RegisterRequest>(
 			const authService = new AuthService();
 			const response: AuthResponse = await authService.register(req.body);
 			await constantTime;
-			res.status(200).send(response);
+			res.status(response.complete ? 200 : 400).send(response);
 		} catch (error) {
 			console.error(error);
 			await constantTime;
@@ -37,7 +36,6 @@ authRouter.post<{}, {}, {}>(
 	authMiddleware,
 	(req: Request, res: Response) => {
 		try {
-			const selfService = new SelfService();
 			const authRes: AuthResponse = {
 				complete: false,
 				errors: [],
@@ -77,7 +75,7 @@ authRouter.post<{}, {}, AuthRequest>(
 			const authService = new AuthService();
 			const response: AuthResponse = await authService.login(req.body);
 			await constantTime;
-			res.status(200).send(response);
+			res.status(response.complete ? 200 : 400).send(response);
 		} catch (error) {
 			console.error(error);
 			await constantTime;

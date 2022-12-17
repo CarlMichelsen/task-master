@@ -19,7 +19,6 @@ export const authMiddleware = (
 			}
 		}
 	} catch (error) {
-		console.error(error);
 		res.status(401).send("Unauthorized");
 	}
 
