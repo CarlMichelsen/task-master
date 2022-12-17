@@ -23,7 +23,7 @@ authRouter.post<{}, {}, RegisterRequest>(
 			const authService = new AuthService();
 			const response: AuthResponse = await authService.register(req.body);
 			await constantTime;
-			res.status(response.complete ? 200 : 400).send(response);
+			res.status(200).send(response);
 		} catch (error) {
 			console.error(error);
 			await constantTime;
@@ -60,7 +60,7 @@ authRouter.post<{}, {}, {}>(
 
 				res.status(200).send(authRes);
 			} else {
-				res.status(401).send(authRes);
+				res.status(200).send(authRes);
 			}
 		} catch (error) {
 			console.error(error);
@@ -77,7 +77,7 @@ authRouter.post<{}, {}, AuthRequest>(
 			const authService = new AuthService();
 			const response: AuthResponse = await authService.login(req.body);
 			await constantTime;
-			res.status(response.complete ? 200 : 400).send(response);
+			res.status(200).send(response);
 		} catch (error) {
 			console.error(error);
 			await constantTime;

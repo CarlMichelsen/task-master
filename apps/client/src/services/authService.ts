@@ -3,8 +3,20 @@ import { readCookie, createCookie, eraseCookie } from "../util/cookie";
 import type { AuthResponse } from "models/auth/authResponse";
 import type { AuthRequest } from "models/auth/authRequest";
 import type { RegisterRequest } from "models/auth/registerRequest";
+import type { ClientData } from "../models/clientData";
+import { AuthState } from "../models/authState";
 
 export class AuthService {
+	private static privateClientData: ClientData = {
+		authState: AuthState.LoggedOut,
+		jwt: null,
+		user: null,
+	};
+
+	public static get clientData() {
+		return this.privateClientData;
+	}
+
 	private static jwtString: string | null = null;
 	public static get jwt(): string | null {
 		if (!this.jwtString) this.jwtString = readCookie("jwt") || null;
@@ -13,7 +25,7 @@ export class AuthService {
 	}
 
 	public static set onStateChange(
-		action: (jwt: string | null) => Promise<void> | null
+		action: (newClientData: ClientData) => Promise<void> | null
 	) {
 		this.stateChangeAction = action;
 	}
@@ -23,6 +35,8 @@ export class AuthService {
 		password: string
 	): Promise<AuthResponse> {
 		const loginRequest: AuthRequest = { email, password };
+
+		this.registerClientData(this.authorizingClientData);
 
 		const res = await axios.post<AuthResponse>(
 			"/api/v1/auth/login",
@@ -35,15 +49,22 @@ export class AuthService {
 		if (res.data.complete) {
 			const jwt = res.data.jwt;
 			if (!jwt) throw new Error("Completed auth request but there is no jwt");
-			this.registerJwt(res.data.jwt);
+			this.registerClientData(this.authResponseToClientData(res.data));
+		} else {
+			this.registerClientData(this.loggedOutClientData);
 		}
 
 		return res.data;
 	}
 
-	public static async authorize(): Promise<AuthResponse> {
+	public static async authorize(): Promise<void> {
+		this.jwt; // trigger getter to check localstorage
+		if (!this.jwt) return;
+
+		this.registerClientData(this.authorizingClientData);
+
 		const res = await axios.post<AuthResponse>("/api/v1/auth/self");
-		return res.data;
+		this.registerClientData(this.authResponseToClientData(res.data));
 	}
 
 	public static async register(
@@ -59,6 +80,8 @@ export class AuthService {
 			password,
 		};
 
+		this.registerClientData(this.authorizingClientData);
+
 		const res = await axios.post<AuthResponse>(
 			"/api/v1/auth/register",
 			registerRequest
@@ -70,36 +93,71 @@ export class AuthService {
 		if (res.data.complete) {
 			const jwt = res.data.jwt;
 			if (!jwt) throw new Error("Completed auth request but there is no jwt");
-			this.registerJwt(res.data.jwt);
+			this.registerClientData(this.authResponseToClientData(res.data));
+		} else {
+			this.registerClientData(this.loggedOutClientData);
 		}
-
-		return res.data;
 	}
 
 	public static logout() {
+		this.registerClientData(this.authResponseToClientData(null));
 		this.registerJwt(null);
 	}
 
-	private static forceRunStateChangeAction() {
-		//  this should not ever be needed
-		this.registerJwt(this.jwtString);
-		this.stateChangeAction(this.jwt);
+	private static authResponseToClientData(
+		authResponse: AuthResponse | null
+	): ClientData {
+		if (!authResponse)
+			return {
+				authState: AuthState.LoggedOut,
+				jwt: null,
+				user: null,
+			};
+
+		return {
+			authState: authResponse.complete
+				? AuthState.LoggedIn
+				: AuthState.LoggedOut,
+			jwt: authResponse.jwt,
+			user: authResponse.user,
+		};
 	}
 
 	private static stateChangeAction: (
-		jwt: string | null
+		newClientData: ClientData
 	) => Promise<void> | null = null;
 
 	private static registerJwt(jwt: string | null) {
-		if (jwt != null) {
-			createCookie("jwt", jwt, 14);
+		if (jwt) {
+			createCookie("jwt", jwt, 7);
 			axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`;
 		} else {
 			eraseCookie("jwt");
 			axios.defaults.headers.common["Authorization"] = undefined;
 		}
-		if (jwt === this.jwtString) return; // only proceed if the jwt has actually changed
 		this.jwtString = jwt;
-		if (this.stateChangeAction) this.stateChangeAction(jwt);
 	}
+
+	private static registerClientData(clientData: ClientData) {
+		if (clientData.authState === AuthState.LoggedIn) {
+			this.registerJwt(clientData.jwt);
+		}
+
+		this.privateClientData = clientData;
+		this.jwtString =
+			clientData.authState === AuthState.LoggedIn ? clientData.jwt : null;
+		this.stateChangeAction && this.stateChangeAction(this.privateClientData);
+	}
+
+	private static readonly authorizingClientData = {
+		authState: AuthState.Authorizing,
+		jwt: null,
+		user: null,
+	};
+
+	private static readonly loggedOutClientData = {
+		authState: AuthState.LoggedOut,
+		jwt: null,
+		user: null,
+	};
 }

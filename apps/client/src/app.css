@@ -18,4 +18,8 @@
   -webkit-text-size-adjust: 100%;
 }
 
+.login-corner-menu-width {
+  width: 36rem;
+}
+
 @tailwind utilities;
