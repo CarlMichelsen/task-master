@@ -18,7 +18,6 @@ const internalErrorMessage: string = "Internal server error";
 authRouter.post<{}, {}, RegisterRequest>(
 	"/register",
 	async (req: Request, res: Response) => {
-		console.log("eee");
 		const constantTime = delay(500);
 		try {
 			const authService = new AuthService();
