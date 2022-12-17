@@ -8,6 +8,12 @@
 	let password2: string = "";
 
 	const submit = async () => {
+		if (!username) return;
+		if (!email) return;
+		if (!fullname) return;
+		if (!password1) return;
+		if (!password2) return;
+
 		if (password1 !== password2) {
 			alert("Passwords don't match!");
 			return;
@@ -27,7 +33,7 @@
 <div>
 	<h2 class="text-xl">Register an account</h2>
 
-	<form type="post">
+	<form type="post" on:submit|preventDefault={submit}>
 		<label for="username-id" hidden={true}>Username</label>
 		<br />
 		<input
@@ -37,7 +43,7 @@
 			id="username-id"
 			placeholder="Display name"
 			class="form-text-input"
-			on:click|preventDefault={submit}
+			on:submit|preventDefault
 		/>
 
 		<br />
@@ -50,9 +56,9 @@
 			name="email"
 			id="email-id"
 			placeholder="Email"
-			pattern={`/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/`}
+			pattern={`[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$`}
 			class="form-text-input"
-			on:click|preventDefault={submit}
+			on:submit|preventDefault
 		/>
 
 		<br />
@@ -66,7 +72,7 @@
 			id="fullname-id"
 			placeholder="Full name"
 			class="form-text-input"
-			on:click|preventDefault={submit}
+			on:submit|preventDefault
 		/>
 
 		<br />
@@ -80,7 +86,7 @@
 			id="password1-id"
 			placeholder="Password"
 			class="form-text-input"
-			on:click|preventDefault={submit}
+			on:submit|preventDefault
 		/>
 
 		<br />
@@ -94,7 +100,7 @@
 			id="password2-id"
 			placeholder="Repeat password"
 			class="form-text-input"
-			on:click|preventDefault={submit}
+			on:submit|preventDefault
 		/>
 
 		<br />
@@ -104,7 +110,7 @@
 			class="form-text-input cursor-pointer bg-neutral-700 hover:bg-neutral-600"
 			type="submit"
 			value="Register"
-			on:click|preventDefault={submit}
+			on:submit|preventDefault={submit}
 		/>
 	</form>
 </div>
