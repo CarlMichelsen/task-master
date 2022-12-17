@@ -46,7 +46,7 @@
 			type="submit"
 			value="Login"
 			on:click|preventDefault={login}
-			class="text-xl bg-gray-600 h-12 w-full"
+			class="text-xl bg-gray-600 h-12 w-full cursor-pointer"
 		/>
 	</form>
 </div>
