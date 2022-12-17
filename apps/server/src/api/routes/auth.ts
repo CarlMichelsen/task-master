@@ -8,6 +8,7 @@ import type { ClientUser } from "models/user/clientUser";
 
 // middleware
 import { authMiddleware } from "../middleware/authMiddleware";
+import { AdministrationService } from "../../services/administrationService";
 
 const authRouter = Router();
 
@@ -17,12 +18,13 @@ const internalErrorMessage: string = "Internal server error";
 authRouter.post<{}, {}, RegisterRequest>(
 	"/register",
 	async (req: Request, res: Response) => {
+		console.log("eee");
 		const constantTime = delay(500);
 		try {
 			const authService = new AuthService();
 			const response: AuthResponse = await authService.register(req.body);
 			await constantTime;
-			res.status(response.complete ? 200 : 400).send(response);
+			res.status(200).send(response);
 		} catch (error) {
 			console.error(error);
 			await constantTime;
@@ -31,8 +33,25 @@ authRouter.post<{}, {}, RegisterRequest>(
 	}
 );
 
-authRouter.post<{}, {}, {}>(
-	"/self",
+authRouter.post<{}, {}, AuthRequest>(
+	"/login",
+	async (req: Request, res: Response) => {
+		const constantTime = delay(100);
+		try {
+			const authService = new AuthService();
+			const response: AuthResponse = await authService.login(req.body);
+			await constantTime;
+			res.status(200).send(response);
+		} catch (error) {
+			console.error(error);
+			await constantTime;
+			res.status(500).send(internalErrorMessage);
+		}
+	}
+);
+
+authRouter.get<{}, {}, {}>(
+	"/",
 	authMiddleware,
 	(req: Request, res: Response) => {
 		try {
@@ -58,7 +77,9 @@ authRouter.post<{}, {}, {}>(
 
 				res.status(200).send(authRes);
 			} else {
-				res.status(200).send(authRes);
+				authRes.complete = false;
+				authRes.errors.push("Can't find user information.");
+				res.status(401).send(authRes);
 			}
 		} catch (error) {
 			console.error(error);
@@ -67,19 +88,18 @@ authRouter.post<{}, {}, {}>(
 	}
 );
 
-authRouter.post<{}, {}, AuthRequest>(
-	"/login",
+authRouter.delete<{}, {}, AuthRequest>(
+	"/",
+	authMiddleware,
 	async (req: Request, res: Response) => {
-		const constantTime = delay(100);
 		try {
-			const authService = new AuthService();
-			const response: AuthResponse = await authService.login(req.body);
-			await constantTime;
-			res.status(response.complete ? 200 : 400).send(response);
+			if (req.claims) {
+				const adminService = new AdministrationService();
+				await adminService.deleteAccountByUserId(req.claims.userId);
+				res.status(200).send(true);
+			}
 		} catch (error) {
-			console.error(error);
-			await constantTime;
-			res.status(500).send(internalErrorMessage);
+			res.status(500).send(false);
 		}
 	}
 );

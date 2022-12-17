@@ -1,12 +1,11 @@
 <script lang="ts">
-	import type { AuthState } from "../models/authState";
 	import { AuthService } from "../services/authService";
 	let email: string = "";
 	let password: string = "";
 
 	const login = () => {
-		if (!email || email.length < 1) return;
-		if (!password || password.length < 1) return;
+		if (email == null) return;
+		if (password == null) return;
 
 		AuthService.login(email, password);
 	};

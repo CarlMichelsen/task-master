@@ -1,19 +1,19 @@
 <script lang="ts">
 	import LoginCornerMenu from "./LoginCornerMenu.svelte";
 	import LoginForm from "./LoginForm.svelte";
-
 	import { AuthState } from "../models/authState";
-	import { AuthService } from "../services/authService";
+	import type { ClientUser } from "models/user/clientUser";
+	import Profile from "./Profile.svelte";
+
 	export let authState: AuthState = AuthState.LoggedOut;
+	export let user: ClientUser | null = null;
 	export let loginMenu: boolean = false;
 
-	$: (authState) => {
-		if (authState === AuthState.LoggedIn) loginMenu = false;
-	};
+	$: changed(authState);
 
-	const logout = () => {
-		AuthService.logout();
-		loginMenu = false;
+	const changed = (authState) => {
+		if (authState === AuthState.LoggedIn) loginMenu = false;
+		if (authState === AuthState.LoggedOut) loginMenu = false;
 	};
 
 	const toggleLoginMenu = () => {
@@ -21,37 +21,37 @@
 	};
 </script>
 
-<div class="h-16 mb-2">
-	<div class="h-full grid grid-cols-4">
+<div class="h-16">
+	<div class="h-full grid grid-cols-2">
 		<a href="/" class="">
 			<h1 class="text-2xl py-1">Task Master</h1>
 		</a>
 
-		<div />
-		<div />
 		<div>
 			<button
 				disabled={authState === AuthState.Authorizing}
-				class={`h-16 bg-slate-600 active:bg-slate-700 hover:bg-green-700 float-right w-36 ${
+				class={`h-16 ${
+					loginMenu
+						? "bg-green-700 hover:bg-green-800"
+						: "bg-slate-600 hover:bg-slate-700"
+				}  float-right w-36 ${
 					authState === AuthState.Authorizing ? "cursor-not-allowed" : ""
 				}`}
 				on:click={toggleLoginMenu}
 				>{authState === AuthState.LoggedIn ? "Profile" : "Login"}</button
 			>
 
-			{#if loginMenu}
-				<div class="relative">
-					<LoginCornerMenu>
-						{#if authState === AuthState.LoggedIn}
-							<button on:click={logout}>Logout</button>
-						{:else if authState === AuthState.Authorizing}
-							<p>Authorizing</p>
-						{:else}
-							<LoginForm />
-						{/if}
-					</LoginCornerMenu>
-				</div>
-			{/if}
+			<div class="relative">
+				<LoginCornerMenu visible={loginMenu}>
+					{#if authState === AuthState.LoggedIn}
+						<Profile {user} />
+					{:else if authState === AuthState.Authorizing}
+						<p>Authorizing</p>
+					{:else}
+						<LoginForm />
+					{/if}
+				</LoginCornerMenu>
+			</div>
 		</div>
 	</div>
 </div>

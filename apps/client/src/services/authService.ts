@@ -30,7 +30,10 @@ export class AuthService {
 		this.stateChangeAction = action;
 	}
 
-	public static async login(email: string, password: string): Promise<void> {
+	public static async login(
+		email: string,
+		password: string
+	): Promise<AuthResponse> {
 		const loginRequest: AuthRequest = { email, password };
 
 		this.registerClientData(this.authorizingClientData);
@@ -41,6 +44,7 @@ export class AuthService {
 				loginRequest
 			);
 			this.registerClientData(this.authResponseToClientData(res.data));
+			return res.data;
 		} catch (error) {
 			this.registerClientData(this.loggedOutClientData);
 		}
@@ -54,7 +58,7 @@ export class AuthService {
 		this.registerClientData(this.authorizingClientData);
 
 		try {
-			const res = await axios.post<AuthResponse>("/api/v1/auth/self");
+			const res = await axios.get<AuthResponse>("/api/v1/auth/");
 			this.registerClientData(this.authResponseToClientData(res.data));
 		} catch (error) {
 			this.registerClientData(this.loggedOutClientData);
@@ -66,7 +70,7 @@ export class AuthService {
 		fullname: string,
 		email: string,
 		password: string
-	): Promise<void> {
+	): Promise<AuthResponse> {
 		const registerRequest: RegisterRequest = {
 			username,
 			fullname,
@@ -82,7 +86,9 @@ export class AuthService {
 				registerRequest
 			);
 			this.registerClientData(this.authResponseToClientData(res.data));
+			return res.data;
 		} catch (error) {
+			console.log(error);
 			this.registerClientData(this.loggedOutClientData);
 		}
 	}
@@ -90,6 +96,18 @@ export class AuthService {
 	public static logout() {
 		this.registerClientData(this.authResponseToClientData(null));
 		this.registerJwt(null);
+	}
+
+	public static async deleteAccount(): Promise<void> {
+		try {
+			const res = await axios.delete<boolean>("/api/v1/auth/");
+			if (res.data) {
+				this.registerClientData(this.authResponseToClientData(null));
+				this.registerJwt(null);
+			}
+		} catch (error) {
+			console.error("An error occured while deleting your account");
+		}
 	}
 
 	private static authResponseToClientData(

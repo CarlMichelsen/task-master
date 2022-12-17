@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Header from "./components/Header.svelte";
+	import LandingZone from "./components/LandingZone.svelte";
 
 	import { AuthState } from "./models/authState";
 	import type { ClientData } from "./models/clientData";
@@ -13,9 +14,9 @@
 	AuthService.authorize();
 </script>
 
-<main class="mx-auto container">
+<main class="h-full w-full">
 	{#if clientData}
-		<Header authState={clientData.authState} />
+		<Header authState={clientData.authState} user={clientData.user} />
 
 		{#if clientData.authState === AuthState.LoggedIn}
 			<div class="p-2 border border-red-600">
@@ -23,6 +24,10 @@
 				<br />
 				<p>Username: "{clientData.user.username}"</p>
 				<p class="break-all">JWT: "{clientData.jwt}"</p>
+			</div>
+		{:else if clientData.authState === AuthState.LoggedOut}
+			<div class="mx-auto container">
+				<LandingZone />
 			</div>
 		{/if}
 	{:else}

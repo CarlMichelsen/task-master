@@ -11,6 +11,15 @@ export class DbUserService {
 		return res?.dataValues ?? null;
 	}
 
+	async deleteUserById(id: string): Promise<boolean> {
+		try {
+			const rows = await User.destroy({ where: { id } });
+			return rows > 0;
+		} catch (error) {
+			return false;
+		}
+	}
+
 	async usernameExists(username: string): Promise<boolean> {
 		const res = await User.findOne({ where: { username } });
 		return !!res;
