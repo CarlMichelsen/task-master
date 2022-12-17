@@ -131,8 +131,6 @@ export class AuthService {
 		}
 
 		this.privateClientData = clientData;
-		this.jwtString =
-			clientData.authState === AuthState.LoggedIn ? clientData.jwt : null;
 		this.stateChangeAction && this.stateChangeAction(this.privateClientData);
 	}
 

@@ -4,11 +4,11 @@ import { AuthRequest } from "models/auth/authRequest";
 
 import { Router, Request, Response } from "express";
 import { AuthService } from "../../services/authService";
-
-// middleware
-import { authGuardMiddleware } from "../middleware/authGuardMiddleware";
 import { SelfService } from "../../services/selfService";
 import type { ClientUser } from "models/user/clientUser";
+
+// middleware
+import { authMiddleware } from "../middleware/authMiddleware";
 
 const authRouter = Router();
 
@@ -34,7 +34,7 @@ authRouter.post<{}, {}, RegisterRequest>(
 
 authRouter.post<{}, {}, {}>(
 	"/self",
-	authGuardMiddleware,
+	authMiddleware,
 	(req: Request, res: Response) => {
 		try {
 			const selfService = new SelfService();

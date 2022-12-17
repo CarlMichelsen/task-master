@@ -20,7 +20,7 @@ export const authMiddleware = (
 		}
 	} catch (error) {
 		console.error(error);
-		res.status(500).send("Internal server error");
+		res.status(401).send("Unauthorized");
 	}
 
 	next();
