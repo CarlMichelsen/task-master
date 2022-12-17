@@ -17,7 +17,7 @@
 </script>
 
 <div>
-	<h4 class="text-lg">Username: {user.username}</h4>
+	<p class="text-lg">Username: {user.username}</p>
 	<br />
 	<button
 		class="text-xl bg-neutral-500 hover:bg-neutral-600 h-12 w-full mb-1"
