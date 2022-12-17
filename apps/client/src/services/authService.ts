@@ -48,6 +48,7 @@ export class AuthService {
 
 	public static async authorize(): Promise<void> {
 		this.jwt; // trigger getter to check localstorage
+		this.registerClientData(this.loggedOutClientData);
 		if (!this.jwt) return;
 
 		this.registerClientData(this.authorizingClientData);
