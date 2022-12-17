@@ -30,31 +30,20 @@ export class AuthService {
 		this.stateChangeAction = action;
 	}
 
-	public static async login(
-		email: string,
-		password: string
-	): Promise<AuthResponse> {
+	public static async login(email: string, password: string): Promise<void> {
 		const loginRequest: AuthRequest = { email, password };
 
 		this.registerClientData(this.authorizingClientData);
 
-		const res = await axios.post<AuthResponse>(
-			"/api/v1/auth/login",
-			loginRequest
-		);
-
-		if (res.status !== 200 && res.status !== 400)
-			console.error("Error during login");
-
-		if (res.data.complete) {
-			const jwt = res.data.jwt;
-			if (!jwt) throw new Error("Completed auth request but there is no jwt");
+		try {
+			const res = await axios.post<AuthResponse>(
+				"/api/v1/auth/login",
+				loginRequest
+			);
 			this.registerClientData(this.authResponseToClientData(res.data));
-		} else {
+		} catch (error) {
 			this.registerClientData(this.loggedOutClientData);
 		}
-
-		return res.data;
 	}
 
 	public static async authorize(): Promise<void> {
@@ -63,8 +52,12 @@ export class AuthService {
 
 		this.registerClientData(this.authorizingClientData);
 
-		const res = await axios.post<AuthResponse>("/api/v1/auth/self");
-		this.registerClientData(this.authResponseToClientData(res.data));
+		try {
+			const res = await axios.post<AuthResponse>("/api/v1/auth/self");
+			this.registerClientData(this.authResponseToClientData(res.data));
+		} catch (error) {
+			this.registerClientData(this.loggedOutClientData);
+		}
 	}
 
 	public static async register(
@@ -72,7 +65,7 @@ export class AuthService {
 		fullname: string,
 		email: string,
 		password: string
-	) {
+	): Promise<void> {
 		const registerRequest: RegisterRequest = {
 			username,
 			fullname,
@@ -82,19 +75,13 @@ export class AuthService {
 
 		this.registerClientData(this.authorizingClientData);
 
-		const res = await axios.post<AuthResponse>(
-			"/api/v1/auth/register",
-			registerRequest
-		);
-
-		if (res.status !== 200 && res.status !== 400)
-			console.error("Error during registration");
-
-		if (res.data.complete) {
-			const jwt = res.data.jwt;
-			if (!jwt) throw new Error("Completed auth request but there is no jwt");
+		try {
+			const res = await axios.post<AuthResponse>(
+				"/api/v1/auth/register",
+				registerRequest
+			);
 			this.registerClientData(this.authResponseToClientData(res.data));
-		} else {
+		} catch (error) {
 			this.registerClientData(this.loggedOutClientData);
 		}
 	}
