@@ -1,14 +1,15 @@
+import { Router, Request, Response } from "express";
+import { AuthService } from "../../services/authService";
+import { AdministrationService } from "../../services/administrationService";
+
 import { RegisterRequest } from "models/auth/registerRequest";
 import { AuthResponse } from "models/auth/authResponse";
 import { AuthRequest } from "models/auth/authRequest";
 
-import { Router, Request, Response } from "express";
-import { AuthService } from "../../services/authService";
 import type { ClientUser } from "models/user/clientUser";
 
 // middleware
 import { authMiddleware } from "../middleware/authMiddleware";
-import { AdministrationService } from "../../services/administrationService";
 
 const authRouter = Router();
 

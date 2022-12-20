@@ -2,6 +2,6 @@
 	import Register from "./Register.svelte";
 </script>
 
-<div>
+<div class="mx-auto container">
 	<Register />
 </div>
