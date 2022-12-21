@@ -1,4 +1,11 @@
-import { Sequelize, DataTypes, Model, ModelOptions } from "sequelize";
+import {
+	Sequelize,
+	DataTypes,
+	Model,
+	ModelOptions,
+	ThroughOptions,
+	ModelAttributeColumnReferencesOptions,
+} from "sequelize";
 import { Configuration } from "../../configuration";
 import { Taskboard } from "./taskboard";
 import { User } from "./user";
@@ -25,39 +32,23 @@ const UserTaskboard = sequelize.define<
 		user_id: {
 			type: DataTypes.UUID,
 			allowNull: false,
+			primaryKey: true,
 			references: {
 				model: User,
+				key: "id",
 			},
-			primaryKey: true,
 		},
 		taskboard_id: {
 			type: DataTypes.UUID,
 			allowNull: false,
+			primaryKey: true,
 			references: {
 				model: Taskboard,
+				key: "id",
 			},
-			primaryKey: true,
 		},
 	},
 	modelOptions
 );
-
-UserTaskboard.belongsTo(User, {
-	foreignKey: "user_id",
-	keyType: DataTypes.UUID,
-});
-
-UserTaskboard.belongsTo(Taskboard, {
-	foreignKey: "taskboard_id",
-	keyType: DataTypes.UUID,
-});
-
-Taskboard.belongsToMany(User, {
-	through: UserTaskboard,
-});
-
-User.belongsToMany(Taskboard, {
-	through: UserTaskboard,
-});
 
 export { UserTaskboard };

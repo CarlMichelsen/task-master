@@ -1,1 +1,33 @@
-export class TaskboardService {}
+import axios from "axios";
+import type { ClientTaskboard } from "models/taskboard/clientTaskboard";
+import type { ServiceResponse } from "models/serviceResponse";
+import type { CreateTaskboardRequest } from "models/taskboard/createTaskboardRequest";
+
+export class TaskboardService {
+	static async getUserTaskboards(): Promise<
+		ServiceResponse<ClientTaskboard[]>
+	> {
+		const taskboardResponse = await axios.get<
+			ServiceResponse<ClientTaskboard[]>
+		>("/api/v1/taskboard/");
+		return taskboardResponse.data;
+	}
+
+	static async createTaskboard(
+		createRequest: CreateTaskboardRequest
+	): Promise<ServiceResponse<ClientTaskboard>> {
+		const taskboardResponse = await axios.post<
+			ServiceResponse<ClientTaskboard>
+		>("/api/v1/taskboard/", createRequest);
+		return taskboardResponse.data;
+	}
+
+	static async deleteTaskboard(
+		taskboardUri: string
+	): Promise<ServiceResponse<string>> {
+		const taskboardResponse = await axios.delete<ServiceResponse<string>>(
+			`/api/v1/taskboard/${taskboardUri}`
+		);
+		return taskboardResponse.data;
+	}
+}

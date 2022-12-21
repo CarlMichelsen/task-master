@@ -125,6 +125,7 @@ export class AuthService {
 				id: uuidv4(),
 				username: request.username,
 				account_id: account.id,
+				upvotes: 0,
 				online: false,
 			};
 			const createdUser = await this.userService.createUser(user);

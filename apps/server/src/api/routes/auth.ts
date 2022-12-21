@@ -5,7 +5,6 @@ import { AdministrationService } from "../../services/administrationService";
 import { RegisterRequest } from "models/auth/registerRequest";
 import { AuthResponse } from "models/auth/authResponse";
 import { AuthRequest } from "models/auth/authRequest";
-
 import type { ClientUser } from "models/user/clientUser";
 
 // middleware

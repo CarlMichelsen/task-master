@@ -9,7 +9,8 @@ const dblog: (sql: string, timing?: number) => void = (
 	sql: string,
 	timing?: number
 ) => {
-	console.log("SQL", `"${sql}"`, timing != null ? `${timing} ms` : undefined);
+	if (!Configuration.production)
+		console.log("SQL", `"${sql}"`, timing != null ? `${timing} ms` : undefined);
 };
 
 const getAllSchemas = async (sql: Sequelize): Promise<string[]> => {
@@ -18,9 +19,12 @@ const getAllSchemas = async (sql: Sequelize): Promise<string[]> => {
 	return schemas;
 };
 
-export const syncDb = async (callback: () => void, skip: boolean = false) => {
+export const syncDb = async (
+	callback: () => Promise<void>,
+	skip: boolean = false
+) => {
 	if (skip) {
-		callback();
+		await callback();
 		return;
 	}
 
@@ -49,5 +53,5 @@ export const syncDb = async (callback: () => void, skip: boolean = false) => {
 	console.log("UserTaskboard", "synced");
 
 	console.log("Sync complete!");
-	callback();
+	await callback();
 };

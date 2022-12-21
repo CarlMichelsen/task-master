@@ -37,8 +37,10 @@ app.use("/api/v1", routes);
 // start webserver
 const httpServer: http.Server = new http.Server(app);
 const websocket = new WebSocketHandler(httpServer);
-syncDb(() => {
-	httpServer.listen(port, () => {
+
+console.log("Starting...");
+syncDb(async () => {
+	httpServer.listen(port, async () => {
 		console.log(`Server started on port ${port}`);
 		websocket.start();
 		startup.setDate(Date.now());

@@ -10,17 +10,25 @@ export const authMiddleware = (
 		const authHeader: string | string[] | null =
 			req.header("Authorization") || null;
 
+		let authorized = false;
 		if (typeof authHeader === "string") {
 			const jwt = authHeader.split(" ")[1];
 			if (jwt) {
 				const authService = new AuthService();
 				const claims = authService.authenticate(jwt);
-				if (claims) req.claims = claims;
+				if (claims) {
+					req.claims = claims;
+					authorized = true;
+				}
 			}
+		}
+
+		if (authorized) {
+			next();
+		} else {
+			res.status(401).send("Unauthorized");
 		}
 	} catch (error) {
 		res.status(401).send("Unauthorized");
 	}
-
-	next();
 };

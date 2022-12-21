@@ -1,130 +1,168 @@
-import { Taskboard, TaskboardAttributes } from "../database/models/taskboard";
-import { User, UserAttributes } from "../database/models/user";
+import { CreateTaskboardRequest } from "models/taskboard/createTaskboardRequest";
+import { TaskboardAttributes } from "../database/models/taskboard";
+import { DbTaskboardService } from "./dbTaskboardService";
+import { TaskboardValidationService } from "./taskboardValidationService";
+import { ServiceResponse } from "models/serviceResponse";
 import {
-	UserTaskboard,
-	UserTaskboardAttributes,
-} from "../database/models/userTaskboard";
+	mapToClientTaskboard,
+	taskboardFactory,
+} from "../mappers/clientTaskboardMapper";
+import { DbUserService } from "./dbUserService";
+import { ClientTaskboard } from "models/taskboard/clientTaskboard";
 
 export class TaskboardService {
-	async getUserTaskboards(userId: string): Promise<TaskboardAttributes[]> {
-		const res = await Taskboard.findAll({
-			include: {
-				model: UserTaskboard,
-				as: "userTaskboardLink",
-				where: {
-					user_id: userId,
-				},
-				required: true,
-			},
-		});
+	private readonly taskboardDb = new DbTaskboardService();
+	private readonly userDb = new DbUserService();
+	private readonly validator = new TaskboardValidationService();
 
-		return res?.map((v) => v.dataValues) ?? [];
+	public async joinTaskboard(
+		taskboardId: string,
+		userId: string
+	): Promise<boolean> {
+		return await this.taskboardDb.joinTaskboard(taskboardId, userId);
 	}
 
-	async getTaskBoardMembers(taskboardId: string): Promise<UserAttributes[]> {
-		const res = await User.findAll({
-			include: {
-				model: UserTaskboard,
-				as: "members",
-				where: {
-					taskboard_id: taskboardId,
-				},
-				required: true,
-			},
-		});
-
-		return res?.map((v) => v.dataValues) ?? [];
-	}
-
-	async getTaskBoard(taskboardId: string): Promise<TaskboardAttributes | null> {
-		const res = await Taskboard.findByPk(taskboardId);
-		return res?.dataValues ?? null;
-	}
-
-	async userIsMember(userId: string, taskboardId: string): Promise<boolean> {
-		const res = await UserTaskboard.findOne({
-			where: {
-				user_id: userId,
-				taskboard_id: taskboardId,
-			},
-		});
-		return !!res?.dataValues;
-	}
-
-	async revokeTaskboardResponsibility(userId: string, taskboardId: string) {
-		const taskboard = await this.getTaskBoard(taskboardId);
+	public async leaveTaskboard(
+		taskboardId: string,
+		userId: string
+	): Promise<boolean> {
+		const taskboard = await this.taskboardDb.getTaskboard(taskboardId);
 		if (!taskboard) return false;
 
-		const members = await this.getTaskBoardMembers(taskboardId);
-		if (!members.find((m) => m.id === userId)) return false;
-
-		if (members.length === 1) {
-			this.naiveLeaveTaskboard(userId, taskboardId);
-		}
-
-		if (taskboard.owner_id === userId) {
-			let randomMember = userId;
-			while (randomMember === userId)
-				randomMember = members[Math.floor(Math.random() * members.length)].id;
-
-			const rows = await Taskboard.update(
-				{
-					owner_id: randomMember,
-				},
-				{
-					where: { id: taskboardId },
-				}
-			);
-
-			return rows[0] > 0;
-		}
-
-		return false;
-	}
-
-	async joinTaskboard(userId: string, taskboardId: string): Promise<boolean> {
-		const link: UserTaskboardAttributes = {
-			user_id: userId,
-			taskboard_id: taskboardId,
-		};
-		const res = await UserTaskboard.create(link);
-		return !!res?.dataValues;
-	}
-
-	private async naiveLeaveTaskboard(userId: string, taskboardId: string) {
-		const rows = await UserTaskboard.destroy({
-			where: {
-				user_id: userId,
-				taskboard_id: taskboardId,
-			},
-		});
-		return rows > 0;
-	}
-
-	async createUserTaskboard(
-		ownerId: string,
-		taskboardInput: TaskboardAttributes
-	): Promise<TaskboardAttributes> {
-		const taskboard: TaskboardAttributes = { ...taskboardInput };
-		taskboard.owner_id = ownerId;
-
-		const link: UserTaskboardAttributes = {
-			user_id: ownerId,
-			taskboard_id: taskboard.id,
-		};
-
-		try {
-			await Taskboard.create(taskboard);
+		const members = await this.taskboardDb.getTaskBoardMembers(taskboardId);
+		if (members.length <= 1) {
+			this.taskboardDb.deleteTaskboard(taskboardId);
+			return true;
+		} else if (taskboard.owner_id === userId) {
 			try {
-				await UserTaskboard.create(link);
+				const candidates = members.filter((m) => m.id !== userId);
+				const candidate =
+					candidates[Math.floor(Math.random() * candidates.length)];
+				const newOwner = await this.taskboardDb.setNewTaskboardOwner(
+					taskboardId,
+					candidate.id
+				);
+				if (!newOwner) throw new Error("Failed to set new owner");
 			} catch (error) {
-				throw new Error("Owner failed to join newly created Taskboard");
+				return false;
 			}
-		} catch (error) {
-			await Taskboard.destroy({ where: { id: taskboard.id } });
-			throw new Error("Failed to create new taskboard");
 		}
 
-		return taskboard;
+		return await this.leaveTaskboard(taskboardId, userId);
+	}
+
+	public async getTaskboard(
+		taskboardId: string
+	): Promise<TaskboardAttributes | null> {
+		return await this.taskboardDb.getTaskboard(taskboardId);
+	}
+
+	public async deleteTaskboard(
+		taskboardId: string,
+		userId: string
+	): Promise<boolean> {
+		const taskboard = await this.taskboardDb.getTaskboard(taskboardId);
+		if (!taskboard) return false;
+		if (taskboard.owner_id !== userId) return false;
+		return await this.taskboardDb.deleteTaskboard(taskboardId);
+	}
+
+	public async deleteTaskboardByUri(
+		uri: string,
+		userId?: string
+	): Promise<ServiceResponse<string>> {
+		const serviceResponse = new ServiceResponse<string>();
+		const taskboard = await this.taskboardDb.getTaskboardByUri(uri);
+		if (!taskboard) {
+			serviceResponse.ok = false;
+			serviceResponse.errors.push("Taskboard not found");
+			return serviceResponse;
+		}
+
+		if (!userId) {
+			serviceResponse.ok = false;
+			serviceResponse.errors.push(
+				"Only owner can delete taskboard and no owner was supplied"
+			);
+			return serviceResponse;
+		}
+
+		if (taskboard.owner_id !== userId) {
+			serviceResponse.ok = false;
+			serviceResponse.errors.push("Only owner can delete taskboard");
+			return serviceResponse;
+		}
+
+		const left = await this.taskboardDb.leaveTaskboard(taskboard.id, userId);
+		const deleted = await this.taskboardDb.deleteTaskboard(taskboard.id);
+
+		serviceResponse.ok = left || deleted;
+		serviceResponse.data = serviceResponse.ok ? taskboard.uri : null;
+		return serviceResponse;
+	}
+
+	public async createTaskboard(
+		ownerId?: string,
+		createRequest?: CreateTaskboardRequest
+	): Promise<ServiceResponse<ClientTaskboard>> {
+		const res = new ServiceResponse<ClientTaskboard>();
+		const name = this.validator.attemptFixTaskboardName(
+			createRequest?.taskboardName
+		);
+		if (!name) {
+			res.ok = false;
+			res.errors.push("No name was supplied");
+			return res;
+		}
+
+		if (!ownerId) {
+			res.ok = false;
+			res.errors.push("No owner was supplied");
+			return res;
+		}
+
+		const validationResult = this.validator.validateTaskboardName(name);
+		if (!validationResult.ok) {
+			res.ok = false;
+			res.errors = res.errors.concat(validationResult.errors);
+			return res;
+		}
+
+		const user = await this.userDb.getUserById(ownerId);
+		if (!user) {
+			res.ok = false;
+			res.errors.push("Owner does not exist");
+			return res;
+		}
+
+		const newTaskboard = await taskboardFactory(ownerId, name);
+
+		const created = await this.taskboardDb.createTaskboard(
+			ownerId,
+			newTaskboard
+		);
+
+		if (!created) {
+			res.ok = false;
+			res.errors.push("Failed to create taskboard");
+			return res;
+		}
+
+		const clientTaskboard = await mapToClientTaskboard(created);
+		if (!clientTaskboard) {
+			res.ok = false;
+			res.errors.push("Failed client taskboard mapping");
+			return res;
+		}
+
+		res.ok = true;
+		res.data = clientTaskboard;
+		return res;
+	}
+
+	public async getUserTaskboards(
+		userId: string
+	): Promise<TaskboardAttributes[]> {
+		return await this.taskboardDb.getUserTaskboards(userId);
 	}
 }

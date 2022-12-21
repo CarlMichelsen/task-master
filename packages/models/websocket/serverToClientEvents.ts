@@ -1,4 +1,4 @@
-import { AuthResponse } from "models/auth/authResponse";
+import { AuthResponse } from "../auth/authResponse";
 
 export interface IServerToClientEvents {
 	noArg: () => void;

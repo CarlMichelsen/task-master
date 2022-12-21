@@ -1,4 +1,7 @@
 <script lang="ts">
+	import Header from "../components/Header.svelte";
+	import Loading from "../components/Loading.svelte";
+
 	import type { ClientData } from "../models/clientData";
 
 	export let clientData: ClientData | null;
@@ -6,5 +9,10 @@
 </script>
 
 <div>
-	<p>Taskboard: {taskboard}</p>
+	{#if clientData}
+		<Header authState={clientData.authState} user={clientData.user} />
+		<p>Taskboard: {taskboard}</p>
+	{:else}
+		<Loading />
+	{/if}
 </div>
