@@ -1,13 +1,12 @@
 <script lang="ts">
 	import TaskboardCard from "./Card/TaskboardCard.svelte";
 	import NewTaskboardCard from "./Card/NewTaskboardCard.svelte";
-
-	import type { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
-	import type { ClientData } from "../models/clientData";
-	import { TaskboardService } from "../services/taskboardService";
 	import Loading from "./Loading.svelte";
 
-	//export let clientData: ClientData;
+	import type { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
+
+	import { TaskboardService } from "../services/taskboardService";
+	import { RouterService } from "../services/routerService";
 
 	let taskboards: ClientTaskboard[] | null = null;
 
@@ -31,6 +30,11 @@
 		}
 	};
 
+	const handleClickTaskboard = (event: CustomEvent<string>) => {
+		if (!event.detail) return;
+		RouterService.route = event.detail;
+	};
+
 	getTaskboards();
 </script>
 
@@ -46,6 +50,7 @@
 					<TaskboardCard
 						taskboard={board}
 						on:deletedTaskboard={handleDeletedTaskboard}
+						on:clickedTaskboard={handleClickTaskboard}
 					/>
 				{/each}
 			</div>

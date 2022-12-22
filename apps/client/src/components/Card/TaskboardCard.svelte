@@ -21,6 +21,10 @@
 			console.error(res.errors);
 		}
 	};
+
+	const taskboardClick = () => {
+		dispatch("clickedTaskboard", taskboard.uri);
+	};
 </script>
 
 <BaseCard>
@@ -28,7 +32,7 @@
 		class="h-full w-full flex flex-col transition-colors hover:bg-neutral-600"
 	>
 		<div class="flex-1">
-			<button class="block w-full h-28">
+			<button class="block w-full h-28" on:click={taskboardClick}>
 				<p>{taskboard.name}</p>
 			</button>
 		</div>

@@ -1,9 +1,12 @@
 <script lang="ts">
 	import LoginCornerMenu from "./LoginCornerMenu.svelte";
 	import LoginForm from "./LoginForm.svelte";
+	import Profile from "./Profile.svelte";
+
 	import { AuthState } from "../models/authState";
 	import type { ClientUser } from "data-transfer-interfaces/user/clientUser";
-	import Profile from "./Profile.svelte";
+
+	import { RouterService } from "../services/routerService";
 
 	export let authState: AuthState = AuthState.LoggedOut;
 	export let user: ClientUser | null = null;
@@ -23,7 +26,12 @@
 
 <div class="h-16">
 	<div class="h-full grid grid-cols-2">
-		<h1 class="text-2xl py-1 ml-3 mt-2.5">Task Master</h1>
+		<button
+			on:click={() => (RouterService.route = null)}
+			class="w-36 text-left ml-3"
+		>
+			<h1 class="text-2xl">Task Master</h1>
+		</button>
 
 		<div>
 			<button

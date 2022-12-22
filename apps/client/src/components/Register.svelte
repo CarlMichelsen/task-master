@@ -30,7 +30,7 @@
 	};
 </script>
 
-<div>
+<div class="mx-auto w-96 mt-6">
 	<h2 class="text-xl">Register an account</h2>
 
 	<form type="post" on:submit|preventDefault={submit}>
