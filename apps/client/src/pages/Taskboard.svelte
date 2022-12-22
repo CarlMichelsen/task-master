@@ -6,6 +6,7 @@
 
 	import type { ClientData } from "../models/clientData";
 	import type { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
+	import { RouterService } from "../services/routerService";
 
 	export let clientData: ClientData | null = null;
 	export let taskboardUri: string | null = null;
@@ -13,11 +14,15 @@
 	let taskboard: ClientTaskboard | null = null;
 
 	const getTaskboard = async (uri: string) => {
-		const res = await TaskboardService.getTaskboardByUri(uri);
-		if (res.ok) taskboard = res.data;
+		try {
+			const res = await TaskboardService.getTaskboardByUri(uri);
+			if (res.ok) taskboard = res.data;
+		} catch (error) {
+			RouterService.route = null;
+		}
 	};
 
-	getTaskboard(taskboardUri);
+	$: getTaskboard(taskboardUri);
 </script>
 
 <div>

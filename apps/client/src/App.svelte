@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onDestroy } from "svelte";
+
 	import Home from "./pages/Home.svelte";
 	import Taskboard from "./pages/Taskboard.svelte";
 	import LandingZone from "./pages/LandingZone.svelte";
@@ -10,9 +12,10 @@
 	import { RouterService } from "./services/routerService";
 	import type { ClientData } from "./models/clientData";
 
-	const routeChange = (newRoute: string | null) => {
-		route = newRoute;
-	};
+	let route: string | null = null;
+
+	const hashchange = () => RouterService.init();
+	const routeChange = (newRoute: string | null) => (route = newRoute);
 
 	let clientData: ClientData | null = null;
 	AuthService.onStateChange = async (newClientData: ClientData | null) => {
@@ -20,11 +23,15 @@
 		console.log(AuthState[clientData.authState]);
 	};
 
-	let route: string | null = null;
 	RouterService.onRouteChange = routeChange;
 
 	RouterService.init();
 	AuthService.authorize();
+
+	addEventListener("hashchange", hashchange);
+	onDestroy(() => {
+		removeEventListener("hashchange", hashchange);
+	});
 </script>
 
 <main class="h-full w-full">
