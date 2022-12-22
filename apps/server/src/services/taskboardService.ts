@@ -35,8 +35,7 @@ export class TaskboardService {
 			taskboardId
 		);
 		if (members.length <= 1) {
-			this.taskboardRepository.deleteTaskboard(taskboardId);
-			return true;
+			return await this.taskboardRepository.deleteTaskboard(taskboardId);
 		} else if (taskboard.owner_id === userId) {
 			try {
 				const candidates = members.filter((m) => m.id !== userId);

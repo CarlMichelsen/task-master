@@ -147,7 +147,7 @@ export class AuthService {
 			res.user = this.getClientUserFromUser(user);
 			res.complete = true;
 			console.log(
-				`"New registration by ${user.username}" with email "${account.email}!"`
+				`New registration by "${user.username}" with email "${account.email}!`
 			);
 			return res;
 		}

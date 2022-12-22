@@ -22,18 +22,19 @@ export class AdministrationService {
 				taskboard.id,
 				userId
 			);
-			if (!left)
-				throw new Error(
-					`Failed to leave taskboard<${taskboard.id}> before deleting account.`
-				);
+			if (!left) {
+				const str = `Failed to leave taskboard<${taskboard.id}> before deleting account.`;
+				throw new Error(str);
+			}
 		}
 
 		const deletedUser = await this.userRepository.deleteUserById(user.id);
+		if (!deletedUser) throw new Error(`Failed to delete user <${user.id}>`);
+
 		const deletedAccount = await this.accountRepository.deleteAccountById(
 			account.id
 		);
 
-		if (!deletedUser) throw new Error(`Failed to delete user <${user.id}>`);
 		if (!deletedAccount)
 			throw new Error(`Failed to delete account <${account.id}>`);
 	}

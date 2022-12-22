@@ -16,6 +16,7 @@ export class UserRepository {
 			const rows = await User.destroy({ where: { id } });
 			return rows > 0;
 		} catch (error) {
+			console.error(error);
 			return false;
 		}
 	}

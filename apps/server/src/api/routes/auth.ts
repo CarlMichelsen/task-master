@@ -98,6 +98,7 @@ authRouter.delete<{}, {}, AuthRequest>(
 				res.status(200).send(true);
 			}
 		} catch (error) {
+			console.error(error);
 			res.status(500).send(false);
 		}
 	}

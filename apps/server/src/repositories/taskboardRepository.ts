@@ -127,14 +127,15 @@ export class TaskboardRepository {
 	public async getTaskBoardMembers(
 		taskboardId: string
 	): Promise<UserAttributes[]> {
+		const memberLinks = await UserTaskboard.findAll({
+			where: { taskboard_id: taskboardId },
+		});
+
+		const ids = memberLinks.map((l) => l.dataValues.user_id);
+
 		const res = await User.findAll({
-			include: {
-				model: UserTaskboard,
-				as: "members",
-				where: {
-					taskboard_id: taskboardId,
-				},
-				required: true,
+			where: {
+				id: ids,
 			},
 		});
 
