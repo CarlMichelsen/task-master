@@ -2,7 +2,7 @@ import { Taskboard, TaskboardAttributes } from "../database/models/taskboard";
 import { User, UserAttributes } from "../database/models/user";
 import { UserTaskboard } from "../database/models/userTaskboard";
 
-export class DbTaskboardService {
+export class TaskboardRepository {
 	public async createTaskboard(
 		userId: string,
 		taskboardInput: TaskboardAttributes

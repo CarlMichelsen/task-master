@@ -1,14 +1,14 @@
 import { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
 import { Taskboard, TaskboardAttributes } from "../database/models/taskboard";
-import { DbUserService } from "../services/dbUserService";
+import { UserRepository } from "../repositories/userRepository";
 import { v4 as uuidv4 } from "uuid";
 import crypto from "crypto";
 
 export const mapToClientTaskboard = async (
 	input: TaskboardAttributes
 ): Promise<ClientTaskboard> => {
-	const userService = new DbUserService();
-	const owner = await userService.getUserById(input.owner_id);
+	const userRepository = new UserRepository();
+	const owner = await userRepository.getUserById(input.owner_id);
 	if (!owner) throw new Error(`Found taskboard without owner <${input.id}>`);
 
 	return {

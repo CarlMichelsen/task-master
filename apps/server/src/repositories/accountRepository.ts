@@ -1,6 +1,6 @@
 import { Account, AccountAttributes } from "../database/models/account";
 
-export class DbAccountService {
+export class AccountRepository {
 	async getAccountById(id: string): Promise<AccountAttributes | null> {
 		const res = await Account.findByPk(id);
 		return res?.dataValues ?? null;

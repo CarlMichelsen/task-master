@@ -1,5 +1,5 @@
-import { DbAccountService } from "./dbAccountService";
-import { DbUserService } from "./dbUserService";
+import { AccountRepository } from "../repositories/accountRepository";
+import { UserRepository } from "../repositories/userRepository";
 
 export class ValidationResult {
 	get ok() {
@@ -9,12 +9,15 @@ export class ValidationResult {
 }
 
 export class AuthValidationService {
-	private accountService: DbAccountService;
-	private userService: DbUserService;
+	private accountRepository: AccountRepository;
+	private userRepository: UserRepository;
 
-	constructor(accountService: DbAccountService, userService: DbUserService) {
-		this.accountService = accountService;
-		this.userService = userService;
+	constructor(
+		accountRepository: AccountRepository,
+		userRepository: UserRepository
+	) {
+		this.accountRepository = accountRepository;
+		this.userRepository = userRepository;
 	}
 
 	public async validatePassword(password: string): Promise<ValidationResult> {
@@ -49,7 +52,7 @@ export class AuthValidationService {
 
 		if (!registering) return res; // the rest of the validation is only relevant for registration
 
-		const exsists = await this.userService.usernameExists(username);
+		const exsists = await this.userRepository.usernameExists(username);
 		if (exsists) {
 			res.errors.push("Username already registered");
 			return res;
@@ -90,7 +93,7 @@ export class AuthValidationService {
 
 		if (!registering) return res; // the rest of the validation is only relevant for registration
 
-		const account = await this.accountService.getAccountByEmail(email);
+		const account = await this.accountRepository.getAccountByEmail(email);
 		if (account) {
 			res.errors.push("Email already registered");
 			return res;

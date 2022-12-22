@@ -1,44 +1,48 @@
 import { CreateTaskboardRequest } from "data-transfer-interfaces/taskboard/createTaskboardRequest";
 import { TaskboardAttributes } from "../database/models/taskboard";
-import { DbTaskboardService } from "./dbTaskboardService";
-import { TaskboardValidationService } from "./taskboardValidationService";
 import { ServiceResponse } from "data-transfer-interfaces/serviceResponse";
+import { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
+
 import {
 	mapToClientTaskboard,
 	taskboardFactory,
 } from "../mappers/clientTaskboardMapper";
-import { DbUserService } from "./dbUserService";
-import { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
+import { TaskboardValidationService } from "./taskboardValidationService";
+
+import { UserRepository } from "../repositories/userRepository";
+import { TaskboardRepository } from "../repositories/taskboardRepository";
 
 export class TaskboardService {
-	private readonly taskboardDb = new DbTaskboardService();
-	private readonly userDb = new DbUserService();
+	private readonly taskboardRepository = new TaskboardRepository();
+	private readonly userRepository = new UserRepository();
 	private readonly validator = new TaskboardValidationService();
 
 	public async joinTaskboard(
 		taskboardId: string,
 		userId: string
 	): Promise<boolean> {
-		return await this.taskboardDb.joinTaskboard(taskboardId, userId);
+		return await this.taskboardRepository.joinTaskboard(taskboardId, userId);
 	}
 
 	public async leaveTaskboard(
 		taskboardId: string,
 		userId: string
 	): Promise<boolean> {
-		const taskboard = await this.taskboardDb.getTaskboard(taskboardId);
+		const taskboard = await this.taskboardRepository.getTaskboard(taskboardId);
 		if (!taskboard) return false;
 
-		const members = await this.taskboardDb.getTaskBoardMembers(taskboardId);
+		const members = await this.taskboardRepository.getTaskBoardMembers(
+			taskboardId
+		);
 		if (members.length <= 1) {
-			this.taskboardDb.deleteTaskboard(taskboardId);
+			this.taskboardRepository.deleteTaskboard(taskboardId);
 			return true;
 		} else if (taskboard.owner_id === userId) {
 			try {
 				const candidates = members.filter((m) => m.id !== userId);
 				const candidate =
 					candidates[Math.floor(Math.random() * candidates.length)];
-				const newOwner = await this.taskboardDb.setNewTaskboardOwner(
+				const newOwner = await this.taskboardRepository.setNewTaskboardOwner(
 					taskboardId,
 					candidate.id
 				);
@@ -54,17 +58,17 @@ export class TaskboardService {
 	public async getTaskboard(
 		taskboardId: string
 	): Promise<TaskboardAttributes | null> {
-		return await this.taskboardDb.getTaskboard(taskboardId);
+		return await this.taskboardRepository.getTaskboard(taskboardId);
 	}
 
 	public async deleteTaskboard(
 		taskboardId: string,
 		userId: string
 	): Promise<boolean> {
-		const taskboard = await this.taskboardDb.getTaskboard(taskboardId);
+		const taskboard = await this.taskboardRepository.getTaskboard(taskboardId);
 		if (!taskboard) return false;
 		if (taskboard.owner_id !== userId) return false;
-		return await this.taskboardDb.deleteTaskboard(taskboardId);
+		return await this.taskboardRepository.deleteTaskboard(taskboardId);
 	}
 
 	public async deleteTaskboardByUri(
@@ -72,7 +76,7 @@ export class TaskboardService {
 		userId?: string
 	): Promise<ServiceResponse<string>> {
 		const serviceResponse = this.baseRes<string>();
-		const taskboard = await this.taskboardDb.getTaskboardByUri(uri);
+		const taskboard = await this.taskboardRepository.getTaskboardByUri(uri);
 		if (!taskboard) {
 			serviceResponse.ok = false;
 			serviceResponse.errors.push("Taskboard not found");
@@ -93,8 +97,13 @@ export class TaskboardService {
 			return serviceResponse;
 		}
 
-		const left = await this.taskboardDb.leaveTaskboard(taskboard.id, userId);
-		const deleted = await this.taskboardDb.deleteTaskboard(taskboard.id);
+		const left = await this.taskboardRepository.leaveTaskboard(
+			taskboard.id,
+			userId
+		);
+		const deleted = await this.taskboardRepository.deleteTaskboard(
+			taskboard.id
+		);
 
 		serviceResponse.ok = left || deleted;
 		serviceResponse.data = serviceResponse.ok ? taskboard.uri : undefined;
@@ -128,7 +137,7 @@ export class TaskboardService {
 			return res;
 		}
 
-		const user = await this.userDb.getUserById(ownerId);
+		const user = await this.userRepository.getUserById(ownerId);
 		if (!user) {
 			res.ok = false;
 			res.errors.push("Owner does not exist");
@@ -137,7 +146,7 @@ export class TaskboardService {
 
 		const newTaskboard = await taskboardFactory(ownerId, name);
 
-		const created = await this.taskboardDb.createTaskboard(
+		const created = await this.taskboardRepository.createTaskboard(
 			ownerId,
 			newTaskboard
 		);
@@ -163,7 +172,7 @@ export class TaskboardService {
 	public async getUserTaskboards(
 		userId: string
 	): Promise<TaskboardAttributes[]> {
-		return await this.taskboardDb.getUserTaskboards(userId);
+		return await this.taskboardRepository.getUserTaskboards(userId);
 	}
 
 	private baseRes<T>(): ServiceResponse<T> {

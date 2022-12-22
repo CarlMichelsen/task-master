@@ -1,9 +1,9 @@
-import { DbAccountService } from "./dbAccountService";
-import { DbUserService } from "./dbUserService";
+import { AccountRepository } from "../repositories/accountRepository";
+import { UserRepository } from "../repositories/userRepository";
 
 export class AdministrationService {
-	private readonly accountService = new DbAccountService();
-	private readonly userService = new DbUserService();
+	private readonly accountService = new AccountRepository();
+	private readonly userService = new UserRepository();
 
 	public async deleteAccountByUserId(userId: string): Promise<void> {
 		const user = await this.userService.getUserById(userId);

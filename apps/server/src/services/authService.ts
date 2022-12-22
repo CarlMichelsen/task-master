@@ -6,8 +6,8 @@ import {
 	AuthValidationService,
 	ValidationResult,
 } from "./authValidationService";
-import { DbAccountService } from "./dbAccountService";
-import { DbUserService } from "./dbUserService";
+import { AccountRepository } from "../repositories/accountRepository";
+import { UserRepository } from "../repositories/userRepository";
 
 import { Configuration } from "../configuration";
 import { UserAttributes } from "../database/models/user";
@@ -27,11 +27,11 @@ export interface JwtClaims extends JwtPayload {
 }
 
 export class AuthService {
-	private accountService = new DbAccountService();
-	private userService = new DbUserService();
+	private accountRepository = new AccountRepository();
+	private userRepository = new UserRepository();
 	private valid = new AuthValidationService(
-		this.accountService,
-		this.userService
+		this.accountRepository,
+		this.userRepository
 	);
 
 	public async login(loginRequest: AuthRequest): Promise<AuthResponse> {
@@ -54,7 +54,7 @@ export class AuthService {
 			return res;
 		}
 
-		const account = await this.accountService.getAccountByEmail(email);
+		const account = await this.accountRepository.getAccountByEmail(email);
 
 		if (!account) {
 			res.errors.push(loginFailedText);
@@ -67,7 +67,7 @@ export class AuthService {
 			.toString("hex");
 
 		if (hash === account.passwordHash) {
-			const user = await this.userService.getUserByAccountId(account.id);
+			const user = await this.userRepository.getUserByAccountId(account.id);
 			if (!user) {
 				res.errors.push(
 					"Failed to find user associated with the login account"
@@ -118,7 +118,7 @@ export class AuthService {
 			email_verified: false,
 		};
 
-		const createdAccount = await this.accountService.createAccount(account);
+		const createdAccount = await this.accountRepository.createAccount(account);
 
 		if (createdAccount) {
 			const user: UserAttributes = {
@@ -128,10 +128,10 @@ export class AuthService {
 				upvotes: 0,
 				online: false,
 			};
-			const createdUser = await this.userService.createUser(user);
+			const createdUser = await this.userRepository.createUser(user);
 
 			if (!createdUser) {
-				const cleanedUp = await this.accountService.deleteAccountById(
+				const cleanedUp = await this.accountRepository.deleteAccountById(
 					account.id
 				);
 				const errMsg = cleanedUp

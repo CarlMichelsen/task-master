@@ -1,6 +1,6 @@
 import { User, UserAttributes } from "../database/models/user";
 
-export class DbUserService {
+export class UserRepository {
 	async getUserById(id: string): Promise<UserAttributes | null> {
 		const res = await User.findByPk(id);
 		return res?.dataValues ?? null;
