@@ -1,7 +1,6 @@
 import { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
 import { Taskboard, TaskboardAttributes } from "../database/models/taskboard";
 import { UserRepository } from "../repositories/userRepository";
-import { v4 as uuidv4 } from "uuid";
 import crypto from "crypto";
 
 export const mapToClientTaskboard = async (
@@ -58,7 +57,7 @@ export const taskboardFactory = async (
 	name: string
 ): Promise<TaskboardAttributes> => {
 	return {
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		organisation_id: null,
 		uri: await uniqueUriGenerator(),
 		background_url: null,

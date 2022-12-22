@@ -1,5 +1,4 @@
 import crypto from "crypto";
-import { v4 as uuidv4 } from "uuid";
 import jwt, { JwtPayload } from "jsonwebtoken";
 
 import {
@@ -85,12 +84,16 @@ export class AuthService {
 		return res;
 	}
 
-	public authenticate(jwtToken: string): JwtClaims | null {
+	public static authenticate(jwtToken: string): JwtClaims | null {
 		if (!jwtToken) return null;
-		const decoded = jwt.verify(jwtToken, Configuration.authorizationSecret, {
-			algorithms: ["HS512"],
-		});
-		return decoded ? (decoded as JwtClaims) : null;
+		try {
+			const decoded = jwt.verify(jwtToken, Configuration.authorizationSecret, {
+				algorithms: ["HS512"],
+			});
+			return decoded ? (decoded as JwtClaims) : null;
+		} catch (error) {
+			return null;
+		}
 	}
 
 	public async register(request: RegisterRequest): Promise<AuthResponse> {
@@ -110,7 +113,7 @@ export class AuthService {
 		const hashSaltPair = this.hashSaltPair(request.password);
 
 		const account: AccountAttributes = {
-			id: uuidv4(),
+			id: crypto.randomUUID(),
 			fullname: request.fullname,
 			email: request.email,
 			passwordHash: hashSaltPair.hash,
@@ -122,7 +125,7 @@ export class AuthService {
 
 		if (createdAccount) {
 			const user: UserAttributes = {
-				id: uuidv4(),
+				id: crypto.randomUUID(),
 				username: request.username,
 				account_id: account.id,
 				upvotes: 0,

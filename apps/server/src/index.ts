@@ -36,7 +36,10 @@ app.use("/api/v1", routes);
 
 // start webserver
 const httpServer: http.Server = new http.Server(app);
-const websocket = new WebSocketHandler(httpServer);
+const websocket = new WebSocketHandler(
+	httpServer,
+	Configuration.production ? undefined : devCorsOptions
+);
 
 console.log("Starting...");
 syncDb(async () => {

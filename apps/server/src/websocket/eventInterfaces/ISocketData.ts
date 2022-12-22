@@ -1,4 +1,5 @@
+import { UserAttributes } from "../../database/models/user";
+
 export interface ISocketData {
-	id: string;
-	name: string;
+	user: UserAttributes;
 }

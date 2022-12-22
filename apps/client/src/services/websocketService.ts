@@ -8,11 +8,19 @@ export class WebsocketService {
 		null;
 	static ready: boolean = true;
 
-	static connect(jwt: string) {
+	static connect(jwt: string, taskboardUri: string) {
 		const hostname = host();
 		this.socket = io(hostname, {
-			auth: { jwt },
+			auth: { jwt, uri: taskboardUri },
 			path: "/socket",
+		});
+
+		this.socket.on("connect", () => {
+			console.log("connect");
+		});
+
+		this.socket.on("disconnect", () => {
+			console.log("disconnect");
 		});
 
 		//this.socket.on("login", login);
@@ -20,6 +28,6 @@ export class WebsocketService {
 	}
 
 	static disconnect() {
-		this.socket.disconnect();
+		this.socket && this.socket.disconnect();
 	}
 }

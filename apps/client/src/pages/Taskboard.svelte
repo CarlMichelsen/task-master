@@ -1,14 +1,16 @@
 <script lang="ts">
+	import { onDestroy } from "svelte";
 	import Header from "../components/Header.svelte";
 	import Loading from "../components/Loading.svelte";
 
 	import { TaskboardService } from "../services/taskboardService";
+	import { RouterService } from "../services/routerService";
+	import { WebsocketService } from "../services/websocketService";
 
 	import type { ClientData } from "../models/clientData";
 	import type { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
-	import { RouterService } from "../services/routerService";
 
-	export let clientData: ClientData | null = null;
+	export let clientData: ClientData;
 	export let taskboardUri: string | null = null;
 
 	let taskboard: ClientTaskboard | null = null;
@@ -16,13 +18,23 @@
 	const getTaskboard = async (uri: string) => {
 		try {
 			const res = await TaskboardService.getTaskboardByUri(uri);
-			if (res.ok) taskboard = res.data;
+			if (res.ok) {
+				taskboard = res.data;
+				WebsocketService.connect(clientData.jwt, taskboard.uri);
+			} else {
+				WebsocketService.disconnect();
+			}
 		} catch (error) {
+			WebsocketService.disconnect();
 			RouterService.route = null;
 		}
 	};
 
 	$: getTaskboard(taskboardUri);
+
+	onDestroy(() => {
+		WebsocketService.disconnect();
+	});
 </script>
 
 <div>

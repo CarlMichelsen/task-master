@@ -10,5 +10,6 @@ export const leave = (
 		IServerToClientEvents,
 		IInterServerEvents,
 		ISocketData
-	>
+	>,
+	reason: string
 ) => {};

@@ -14,8 +14,7 @@ export const authMiddleware = (
 		if (typeof authHeader === "string") {
 			const jwt = authHeader.split(" ")[1];
 			if (jwt) {
-				const authService = new AuthService();
-				const claims = authService.authenticate(jwt);
+				const claims = AuthService.authenticate(jwt);
 				if (claims) {
 					req.claims = claims;
 					authorized = true;
