@@ -1,19 +1,35 @@
 import { AccountRepository } from "../repositories/accountRepository";
 import { UserRepository } from "../repositories/userRepository";
+import { TaskboardService } from "./taskboardService";
 
 export class AdministrationService {
-	private readonly accountService = new AccountRepository();
-	private readonly userService = new UserRepository();
+	private readonly taskboardService = new TaskboardService();
+	private readonly accountRepository = new AccountRepository();
+	private readonly userRepository = new UserRepository();
 
 	public async deleteAccountByUserId(userId: string): Promise<void> {
-		const user = await this.userService.getUserById(userId);
+		const user = await this.userRepository.getUserById(userId);
 		if (!user) throw new Error("User does not exist");
 
-		const account = await this.accountService.getAccountById(user.account_id);
+		const account = await this.accountRepository.getAccountById(
+			user.account_id
+		);
 		if (!account) throw new Error("Account does not exist");
 
-		const deletedUser = await this.userService.deleteUserById(user.id);
-		const deletedAccount = await this.accountService.deleteAccountById(
+		const taskboards = await this.taskboardService.getUserTaskboards(userId);
+		for (let taskboard of taskboards) {
+			const left = await this.taskboardService.leaveTaskboard(
+				taskboard.id,
+				userId
+			);
+			if (!left)
+				throw new Error(
+					`Failed to leave taskboard<${taskboard.id}> before deleting account.`
+				);
+		}
+
+		const deletedUser = await this.userRepository.deleteUserById(user.id);
+		const deletedAccount = await this.accountRepository.deleteAccountById(
 			account.id
 		);
 
