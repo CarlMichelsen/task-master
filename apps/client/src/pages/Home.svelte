@@ -14,7 +14,7 @@
 	{#if clientData}
 		<Header authState={clientData.authState} user={clientData.user} />
 		{#if clientData.authState === AuthState.LoggedIn}
-			<ProfileHome {clientData} />
+			<ProfileHome />
 		{:else if clientData.authState === AuthState.LoggedOut}
 			<LandingZone />
 		{/if}

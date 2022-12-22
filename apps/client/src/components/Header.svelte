@@ -23,7 +23,7 @@
 
 <div class="h-16">
 	<div class="h-full grid grid-cols-2">
-		<h1 class="text-2xl py-1">Task Master</h1>
+		<h1 class="text-2xl py-1 ml-3 mt-2.5">Task Master</h1>
 
 		<div>
 			<button

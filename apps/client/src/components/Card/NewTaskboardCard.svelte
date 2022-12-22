@@ -21,9 +21,9 @@
 
 <BaseCard>
 	<button
-		class="block h-full w-full rounded-sm hover:bg-green-700 active:bg-green-900"
+		class="block h-full w-full rounded-sm hover:bg-green-700 active:bg-green-900 hover:no-underline"
 		on:click={createNewTaskboard}
 	>
-		Create
+		<p class="text-8xl mt-1">+</p>
 	</button>
 </BaseCard>

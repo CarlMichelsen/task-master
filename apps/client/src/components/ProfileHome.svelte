@@ -7,7 +7,7 @@
 	import { TaskboardService } from "../services/taskboardService";
 	import Loading from "./Loading.svelte";
 
-	export let clientData: ClientData;
+	//export let clientData: ClientData;
 
 	let taskboards: ClientTaskboard[] | null = null;
 
@@ -37,16 +37,17 @@
 <div>
 	{#if taskboards !== null}
 		<div class="mx-auto container">
+			<br />
 			<div
 				class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
 			>
+				<NewTaskboardCard on:newTaskboard={handleNewTaskboard} />
 				{#each taskboards as board}
 					<TaskboardCard
 						taskboard={board}
 						on:deletedTaskboard={handleDeletedTaskboard}
 					/>
 				{/each}
-				<NewTaskboardCard on:newTaskboard={handleNewTaskboard} />
 			</div>
 		</div>
 	{:else}

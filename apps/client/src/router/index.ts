@@ -10,6 +10,15 @@ export interface RouteInformation {
 	taskboard?: string;
 }
 
+export const navigate = (page: Page, taskboard?: string) => {
+	// TODO: make this work!!!
+	const parameters = getParameters(window.location.search);
+	const pageValue = (!!Page[page] ? page : Page.Home) as Page;
+	if (pageValue === Page.Home) parameters.delete("p");
+	const lel = Object.fromEntries(parameters);
+	//URLSearchParams.set();
+};
+
 export const router = (): RouteInformation => {
 	const parameters = getParameters(window.location.search);
 	const pageString = parameters.get("p");

@@ -50,7 +50,10 @@ taskboardRouter.post<{}, {}, CreateTaskboardRequest>(
 				req.claims?.userId,
 				createRequest
 			);
-			console.log(response);
+			if (response.ok)
+				console.log(
+					`${req.claims?.username} created a new taskboard "${createRequest?.taskboardName}"`
+				);
 			res.status(200).send(response);
 		} catch (error) {
 			console.error(error);
@@ -70,6 +73,10 @@ taskboardRouter.delete(
 				uri,
 				req.claims?.userId
 			);
+			if (servRes.ok)
+				console.log(
+					`${req.claims?.username} deleted taskboard with uri <${servRes.data}>`
+				);
 			res.status(200).send(servRes);
 		} catch (error) {
 			console.error(error);

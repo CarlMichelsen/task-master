@@ -15,13 +15,13 @@ export class TaskboardValidationService {
 			return res;
 		}
 
-		if (taskboardName.length <= 4) {
-			res.errors.push("Taskboard names need to be 4 characters or more");
+		if (taskboardName.length <= 3) {
+			res.errors.push("Taskboard names need to be 3 characters or more");
 			return res;
 		}
 
-		if (taskboardName.length >= 254) {
-			res.errors.push("Taskboard names can't be longer than 254 characters");
+		if (taskboardName.length >= 32) {
+			res.errors.push("Taskboard names can't be longer than 32 characters");
 			return res;
 		}
 
