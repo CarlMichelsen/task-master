@@ -5,8 +5,8 @@ import { join } from "./routes/join";
 import { leave } from "./routes/leave";
 
 import { IInterServerEvents } from "./eventInterfaces/IInterServerEvents";
-import { IClientToServerEvents } from "models/websocket/clientToServerEvents";
-import { IServerToClientEvents } from "models/websocket/serverToClientEvents";
+import { IClientToServerEvents } from "data-transfer-interfaces/websocket/clientToServerEvents";
+import { IServerToClientEvents } from "data-transfer-interfaces/websocket/serverToClientEvents";
 import { ISocketData } from "./eventInterfaces/ISocketData";
 
 export class WebSocketHandler {

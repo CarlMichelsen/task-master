@@ -1,8 +1,8 @@
 import { Router, Request, Response } from "express";
 
 // models
-import { ServiceResponse } from "models/serviceResponse";
-import { ClientTaskboard } from "models/taskboard/clientTaskboard";
+import { ServiceResponse } from "data-transfer-interfaces/serviceResponse";
+import { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
 
 // middleware
 import { authMiddleware } from "../middleware/authMiddleware";
@@ -12,7 +12,7 @@ import { TaskboardService } from "../../services/taskboardService";
 
 // etc
 import { mapManyToClientTaskboards } from "../../mappers/clientTaskboardMapper";
-import { CreateTaskboardRequest } from "models/taskboard/createTaskboardRequest";
+import { CreateTaskboardRequest } from "data-transfer-interfaces/taskboard/createTaskboardRequest";
 
 const taskboardRouter = Router();
 
@@ -23,7 +23,10 @@ taskboardRouter.get(
 		try {
 			const userId = req.claims?.userId;
 			if (!userId) throw new Error("No userid in claims");
-			const response = new ServiceResponse<ClientTaskboard[]>();
+			const response: ServiceResponse<ClientTaskboard[]> = {
+				ok: false,
+				errors: [],
+			};
 			const taskboardService = new TaskboardService();
 			const taskboards = await taskboardService.getUserTaskboards(userId);
 			response.ok = true;

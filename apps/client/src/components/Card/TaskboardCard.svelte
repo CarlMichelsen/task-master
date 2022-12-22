@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
 	import BaseCard from "./BaseCard.svelte";
-	import type { ClientTaskboard } from "models/taskboard/clientTaskboard";
+	import type { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
 	import { TaskboardService } from "../../services/taskboardService";
 
 	const dispatch = createEventDispatcher();

@@ -1,7 +1,7 @@
 import axios from "axios";
-import type { ClientTaskboard } from "models/taskboard/clientTaskboard";
-import type { ServiceResponse } from "models/serviceResponse";
-import type { CreateTaskboardRequest } from "models/taskboard/createTaskboardRequest";
+import type { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
+import type { ServiceResponse } from "data-transfer-interfaces/serviceResponse";
+import type { CreateTaskboardRequest } from "data-transfer-interfaces/taskboard/createTaskboardRequest";
 
 export class TaskboardService {
 	static async getUserTaskboards(): Promise<

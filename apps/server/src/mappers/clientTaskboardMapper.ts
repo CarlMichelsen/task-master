@@ -1,4 +1,4 @@
-import { ClientTaskboard } from "models/taskboard/clientTaskboard";
+import { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
 import { Taskboard, TaskboardAttributes } from "../database/models/taskboard";
 import { DbUserService } from "../services/dbUserService";
 import { v4 as uuidv4 } from "uuid";

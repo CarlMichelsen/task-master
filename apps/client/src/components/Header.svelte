@@ -2,7 +2,7 @@
 	import LoginCornerMenu from "./LoginCornerMenu.svelte";
 	import LoginForm from "./LoginForm.svelte";
 	import { AuthState } from "../models/authState";
-	import type { ClientUser } from "models/user/clientUser";
+	import type { ClientUser } from "data-transfer-interfaces/user/clientUser";
 	import Profile from "./Profile.svelte";
 
 	export let authState: AuthState = AuthState.LoggedOut;

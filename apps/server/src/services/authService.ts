@@ -13,10 +13,10 @@ import { Configuration } from "../configuration";
 import { UserAttributes } from "../database/models/user";
 import { AccountAttributes } from "../database/models/account";
 
-import { RegisterRequest } from "models/auth/registerRequest";
-import { AuthResponse } from "models/auth/authResponse";
-import { AuthRequest } from "models/auth/authRequest";
-import { ClientUser } from "models/user/clientUser";
+import { RegisterRequest } from "data-transfer-interfaces/auth/registerRequest";
+import { AuthResponse } from "data-transfer-interfaces/auth/authResponse";
+import { AuthRequest } from "data-transfer-interfaces/auth/authRequest";
+import { ClientUser } from "data-transfer-interfaces/user/clientUser";
 
 export interface JwtClaims extends JwtPayload {
 	userId: string;

@@ -2,7 +2,7 @@
 	import TaskboardCard from "./Card/TaskboardCard.svelte";
 	import NewTaskboardCard from "./Card/NewTaskboardCard.svelte";
 
-	import type { ClientTaskboard } from "models/taskboard/clientTaskboard";
+	import type { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
 	import type { ClientData } from "../models/clientData";
 	import { TaskboardService } from "../services/taskboardService";
 	import Loading from "./Loading.svelte";

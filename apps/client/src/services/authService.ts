@@ -1,8 +1,8 @@
 import axios from "axios";
 import { readCookie, createCookie, eraseCookie } from "../util/cookie";
-import type { AuthResponse } from "models/auth/authResponse";
-import type { AuthRequest } from "models/auth/authRequest";
-import type { RegisterRequest } from "models/auth/registerRequest";
+import type { AuthResponse } from "data-transfer-interfaces/auth/authResponse";
+import type { AuthRequest } from "data-transfer-interfaces/auth/authRequest";
+import type { RegisterRequest } from "data-transfer-interfaces/auth/registerRequest";
 import type { ClientData } from "../models/clientData";
 import { AuthState } from "../models/authState";
 

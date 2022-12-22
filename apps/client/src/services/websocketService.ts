@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
-import type { IServerToClientEvents } from "models/websocket/serverToClientEvents";
-import type { IClientToServerEvents } from "models/websocket/clientToServerEvents";
+import type { IServerToClientEvents } from "data-transfer-interfaces/websocket/serverToClientEvents";
+import type { IClientToServerEvents } from "data-transfer-interfaces/websocket/clientToServerEvents";
 import { host } from "../util/host";
 
 export class WebsocketService {

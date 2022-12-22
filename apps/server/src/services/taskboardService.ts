@@ -1,14 +1,14 @@
-import { CreateTaskboardRequest } from "models/taskboard/createTaskboardRequest";
+import { CreateTaskboardRequest } from "data-transfer-interfaces/taskboard/createTaskboardRequest";
 import { TaskboardAttributes } from "../database/models/taskboard";
 import { DbTaskboardService } from "./dbTaskboardService";
 import { TaskboardValidationService } from "./taskboardValidationService";
-import { ServiceResponse } from "models/serviceResponse";
+import { ServiceResponse } from "data-transfer-interfaces/serviceResponse";
 import {
 	mapToClientTaskboard,
 	taskboardFactory,
 } from "../mappers/clientTaskboardMapper";
 import { DbUserService } from "./dbUserService";
-import { ClientTaskboard } from "models/taskboard/clientTaskboard";
+import { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
 
 export class TaskboardService {
 	private readonly taskboardDb = new DbTaskboardService();
@@ -71,7 +71,7 @@ export class TaskboardService {
 		uri: string,
 		userId?: string
 	): Promise<ServiceResponse<string>> {
-		const serviceResponse = new ServiceResponse<string>();
+		const serviceResponse = this.baseRes<string>();
 		const taskboard = await this.taskboardDb.getTaskboardByUri(uri);
 		if (!taskboard) {
 			serviceResponse.ok = false;
@@ -97,7 +97,7 @@ export class TaskboardService {
 		const deleted = await this.taskboardDb.deleteTaskboard(taskboard.id);
 
 		serviceResponse.ok = left || deleted;
-		serviceResponse.data = serviceResponse.ok ? taskboard.uri : null;
+		serviceResponse.data = serviceResponse.ok ? taskboard.uri : undefined;
 		return serviceResponse;
 	}
 
@@ -105,7 +105,7 @@ export class TaskboardService {
 		ownerId?: string,
 		createRequest?: CreateTaskboardRequest
 	): Promise<ServiceResponse<ClientTaskboard>> {
-		const res = new ServiceResponse<ClientTaskboard>();
+		const res = this.baseRes<ClientTaskboard>();
 		const name = this.validator.attemptFixTaskboardName(
 			createRequest?.taskboardName
 		);
@@ -164,5 +164,12 @@ export class TaskboardService {
 		userId: string
 	): Promise<TaskboardAttributes[]> {
 		return await this.taskboardDb.getUserTaskboards(userId);
+	}
+
+	private baseRes<T>(): ServiceResponse<T> {
+		return {
+			ok: false,
+			errors: [],
+		};
 	}
 }

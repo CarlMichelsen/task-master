@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ClientUser } from "models/user/clientUser";
+	import type { ClientUser } from "data-transfer-interfaces/user/clientUser";
 	import { AuthService } from "../services/authService";
 
 	export let user: ClientUser;
