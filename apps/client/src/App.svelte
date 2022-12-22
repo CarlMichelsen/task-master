@@ -10,6 +10,10 @@
 	import { RouterService } from "./services/routerService";
 	import type { ClientData } from "./models/clientData";
 
+	const routeChange = (newRoute: string | null) => {
+		route = newRoute;
+	};
+
 	let clientData: ClientData | null = null;
 	AuthService.onStateChange = async (newClientData: ClientData | null) => {
 		clientData = { ...newClientData };
@@ -17,9 +21,7 @@
 	};
 
 	let route: string | null = null;
-	RouterService.onRouteChange = (newRoute: string | null) => {
-		route = newRoute;
-	};
+	RouterService.onRouteChange = routeChange;
 
 	RouterService.init();
 	AuthService.authorize();
@@ -32,7 +34,7 @@
 		{#if !route}
 			<Home {clientData} />
 		{:else}
-			<Taskboard {clientData} taskboard={route ? route : null} />
+			<Taskboard {clientData} taskboardUri={route ? route : null} />
 		{/if}
 	{:else}
 		<Loading />

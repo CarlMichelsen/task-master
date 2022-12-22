@@ -61,6 +61,12 @@ export class TaskboardService {
 		return await this.taskboardRepository.getTaskboard(taskboardId);
 	}
 
+	public async getTaskboardByUri(
+		uri: string
+	): Promise<TaskboardAttributes | null> {
+		return await this.taskboardRepository.getTaskboardByUri(uri);
+	}
+
 	public async deleteTaskboard(
 		taskboardId: string,
 		userId: string

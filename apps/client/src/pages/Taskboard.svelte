@@ -2,16 +2,32 @@
 	import Header from "../components/Header.svelte";
 	import Loading from "../components/Loading.svelte";
 
-	import type { ClientData } from "../models/clientData";
+	import { TaskboardService } from "../services/taskboardService";
 
-	export let clientData: ClientData | null;
-	export let taskboard: string | null;
+	import type { ClientData } from "../models/clientData";
+	import type { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
+
+	export let clientData: ClientData | null = null;
+	export let taskboardUri: string | null = null;
+
+	let taskboard: ClientTaskboard | null = null;
+
+	const getTaskboard = async (uri: string) => {
+		const res = await TaskboardService.getTaskboardByUri(uri);
+		if (res.ok) taskboard = res.data;
+	};
+
+	getTaskboard(taskboardUri);
 </script>
 
 <div>
-	{#if clientData}
-		<Header authState={clientData.authState} user={clientData.user} />
-		<p>Taskboard: {taskboard}</p>
+	<Header authState={clientData.authState} user={clientData.user} />
+	{#if taskboard !== null}
+		<div>
+			<p>Taskboard: {taskboard.name}</p>
+			<p>Uri: {taskboard.uri}</p>
+			<p>Owner: {taskboard.ownerUsername}</p>
+		</div>
 	{:else}
 		<Loading />
 	{/if}

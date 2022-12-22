@@ -13,6 +13,15 @@ export class TaskboardService {
 		return taskboardResponse.data;
 	}
 
+	static async getTaskboardByUri(
+		uri: string
+	): Promise<ServiceResponse<ClientTaskboard>> {
+		const taskboardResponse = await axios.get<ServiceResponse<ClientTaskboard>>(
+			`/api/v1/taskboard/${uri}`
+		);
+		return taskboardResponse.data;
+	}
+
 	static async createTaskboard(
 		createRequest: CreateTaskboardRequest
 	): Promise<ServiceResponse<ClientTaskboard>> {
