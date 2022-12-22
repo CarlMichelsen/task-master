@@ -1,8 +1,6 @@
 <script lang="ts">
 </script>
 
-<div
-	class="p-1 my-1 mx-auto border w-72 h-24 rounded-md shadow-2xl bg-neutral-800"
->
+<div class="my-1 mx-auto w-72 h-28 rounded-sm shadow-2xl bg-neutral-700">
 	<slot />
 </div>

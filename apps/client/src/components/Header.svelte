@@ -23,9 +23,7 @@
 
 <div class="h-16">
 	<div class="h-full grid grid-cols-2">
-		<a href="/" class="">
-			<h1 class="text-2xl py-1">Task Master</h1>
-		</a>
+		<h1 class="text-2xl py-1">Task Master</h1>
 
 		<div>
 			<button

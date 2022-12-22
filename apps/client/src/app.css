@@ -27,7 +27,7 @@
 }
 
 button {
-  @apply transition-colors;
+  @apply transition-colors hover:underline;
 }
 
 @tailwind utilities;
