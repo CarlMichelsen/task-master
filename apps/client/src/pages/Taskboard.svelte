@@ -61,7 +61,7 @@
 				<h3 class="text-2xl">Connected users</h3>
 				<br />
 				{#each connected as user}
-					<div class="flex w-56 border-b">
+					<div class="flex w-48 border-b">
 						<div class="flex-1">
 							<p class="text-lg mt-4">{user.username}</p>
 						</div>
