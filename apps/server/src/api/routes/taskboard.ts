@@ -92,6 +92,25 @@ taskboardRouter.post<{}, {}, CreateTaskboardRequest>(
 	}
 );
 
+taskboardRouter.post(
+	"/leave/:uri",
+	authMiddleware,
+	async (req: Request, res: Response) => {
+		try {
+			const uri = req.params.uri;
+			const taskboardService = new TaskboardService();
+			const servRes = await taskboardService.leaveTaskboardByUri(
+				uri,
+				req.claims?.userId
+			);
+			res.status(200).send(servRes);
+		} catch (error) {
+			console.error(error);
+			res.status(500).send("Internal server error");
+		}
+	}
+);
+
 taskboardRouter.delete(
 	"/:uri",
 	authMiddleware,

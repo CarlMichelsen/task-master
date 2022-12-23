@@ -4,24 +4,28 @@
 	import Loading from "./Loading.svelte";
 
 	import type { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
+	import type { ClientData } from "../models/clientData";
 
 	import { TaskboardService } from "../services/taskboardService";
 	import { RouterService } from "../services/routerService";
 
+	export let clientData: ClientData;
 	let taskboards: ClientTaskboard[] | null = null;
 
 	const getTaskboards = async () => {
 		const res = await TaskboardService.getUserTaskboards();
-		taskboards = res.ok ? res.data : [];
+		taskboards = res.ok && res.data ? res.data : [];
 	};
 
 	const handleNewTaskboard = (event: CustomEvent<ClientTaskboard>) => {
+		if (!taskboards) return;
 		const taskboard = event.detail;
 		taskboards.push(taskboard);
 		taskboards = [...taskboards];
 	};
 
-	const handleDeletedTaskboard = (event: CustomEvent<string>) => {
+	const handleRemovedTaskboard = (event: CustomEvent<string>) => {
+		if (!taskboards) return;
 		const uri = event.detail;
 		const idx = taskboards.findIndex((t) => t.uri === uri);
 		if (idx !== -1) {
@@ -49,7 +53,8 @@
 				{#each taskboards as board}
 					<TaskboardCard
 						taskboard={board}
-						on:deletedTaskboard={handleDeletedTaskboard}
+						{clientData}
+						on:removedTaskboard={handleRemovedTaskboard}
 						on:clickedTaskboard={handleClickTaskboard}
 					/>
 				{/each}

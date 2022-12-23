@@ -3,10 +3,10 @@
 	import ProfileHome from "../components/ProfileHome.svelte";
 	import type { ClientData } from "../models/clientData";
 
-	export let clientData: ClientData | null;
+	export let clientData: ClientData;
 </script>
 
 <div>
 	<Header authState={clientData.authState} user={clientData.user} />
-	<ProfileHome />
+	<ProfileHome {clientData} />
 </div>

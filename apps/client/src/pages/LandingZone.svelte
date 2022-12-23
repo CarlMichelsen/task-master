@@ -6,7 +6,7 @@
 	import type { AuthState } from "../models/authState";
 
 	export let authState: AuthState;
-	export let user: ClientUser;
+	export let user: ClientUser | null;
 </script>
 
 <div>

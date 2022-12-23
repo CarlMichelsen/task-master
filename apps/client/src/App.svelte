@@ -19,8 +19,8 @@
 
 	let clientData: ClientData | null = null;
 	AuthService.onStateChange = async (newClientData: ClientData | null) => {
-		clientData = { ...newClientData };
-		console.log(AuthState[clientData.authState]);
+		clientData = newClientData ? { ...newClientData } : null;
+		console.log(AuthState[clientData?.authState ?? 0]);
 	};
 
 	RouterService.onRouteChange = routeChange;

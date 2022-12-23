@@ -54,6 +54,19 @@ export class TaskboardService {
 		return await this.leaveTaskboard(taskboardId, userId);
 	}
 
+	public async isMember(userId: string, taskboardId: string): Promise<boolean> {
+		const user = await this.userRepository.getUserById(userId);
+		if (!user) return false;
+
+		const taskboard = await this.taskboardRepository.getTaskboard(taskboardId);
+		if (!taskboard) return false;
+
+		const members = await this.taskboardRepository.getTaskBoardMembers(
+			taskboard.id
+		);
+		return members.findIndex((u) => u.id === userId) !== -1;
+	}
+
 	public async getTaskboard(
 		taskboardId: string
 	): Promise<TaskboardAttributes | null> {
@@ -74,6 +87,40 @@ export class TaskboardService {
 		if (!taskboard) return false;
 		if (taskboard.owner_id !== userId) return false;
 		return await this.taskboardRepository.deleteTaskboard(taskboardId);
+	}
+
+	public async leaveTaskboardByUri(
+		uri: string,
+		userId?: string
+	): Promise<ServiceResponse<string>> {
+		const serviceResponse = this.baseRes<string>();
+		const taskboard = await this.taskboardRepository.getTaskboardByUri(uri);
+
+		if (!taskboard) {
+			serviceResponse.ok = false;
+			serviceResponse.errors.push("Taskboard not found");
+			return serviceResponse;
+		}
+
+		if (!userId) {
+			serviceResponse.ok = false;
+			serviceResponse.errors.push("No user was supplied");
+			return serviceResponse;
+		}
+
+		const left = await this.taskboardRepository.leaveTaskboard(
+			taskboard.id,
+			userId
+		);
+
+		serviceResponse.ok = left;
+		if (left) {
+			serviceResponse.data = taskboard.uri;
+		} else {
+			serviceResponse.errors.push("Failed to leave");
+		}
+
+		return serviceResponse;
 	}
 
 	public async deleteTaskboardByUri(
@@ -102,15 +149,11 @@ export class TaskboardService {
 			return serviceResponse;
 		}
 
-		const left = await this.taskboardRepository.leaveTaskboard(
-			taskboard.id,
-			userId
-		);
 		const deleted = await this.taskboardRepository.deleteTaskboard(
 			taskboard.id
 		);
 
-		serviceResponse.ok = left || deleted;
+		serviceResponse.ok = deleted;
 		serviceResponse.data = serviceResponse.ok ? taskboard.uri : undefined;
 		return serviceResponse;
 	}

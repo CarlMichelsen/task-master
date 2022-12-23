@@ -39,4 +39,13 @@ export class TaskboardService {
 		);
 		return taskboardResponse.data;
 	}
+
+	static async leaveTaskboard(
+		taskboardUri: string
+	): Promise<ServiceResponse<string>> {
+		const taskboardResponse = await axios.post<ServiceResponse<string>>(
+			`/api/v1/taskboard/leave/${taskboardUri}`
+		);
+		return taskboardResponse.data;
+	}
 }

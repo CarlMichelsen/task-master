@@ -14,6 +14,7 @@ import { ISocketData } from "./eventInterfaces/ISocketData";
 import { TaskboardRepository } from "../repositories/taskboardRepository";
 import { TaskboardLobby } from "./taskboardLobby";
 import { mapToManyClientUser } from "../mappers/clientUserMapper";
+import { TaskboardService } from "../services/taskboardService";
 
 export class WebSocketHandler {
 	lobbies: Map<string, TaskboardLobby>;
@@ -46,6 +47,23 @@ export class WebSocketHandler {
 				socket.disconnect();
 				return;
 			}
+
+			const taskboardService = new TaskboardService();
+			let isMember = await taskboardService.isMember(user.id, taskboard.id);
+			if (!isMember) {
+				const joined = await taskboardService.joinTaskboard(
+					taskboard.id,
+					user.id
+				);
+
+				isMember = joined;
+			}
+
+			if (!isMember) {
+				socket.disconnect();
+				return;
+			}
+
 			socket.data.user = user;
 			const exsisting = this.lobbies.get(taskboard.uri);
 			const lobby = exsisting ? exsisting : new TaskboardLobby(taskboard);

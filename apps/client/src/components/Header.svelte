@@ -14,7 +14,7 @@
 
 	$: changed(authState);
 
-	const changed = (authState) => {
+	const changed = (authState: AuthState) => {
 		if (authState === AuthState.LoggedIn) loginMenu = false;
 		if (authState === AuthState.LoggedOut) loginMenu = false;
 	};
@@ -25,13 +25,24 @@
 </script>
 
 <div class="h-16">
-	<div class="h-full grid grid-cols-2">
+	<div class="h-full grid grid-cols-3">
 		<button
 			on:click={() => (RouterService.route = null)}
 			class="w-36 text-left ml-3"
 		>
 			<h1 class="text-2xl">Task Master</h1>
 		</button>
+
+		<div>
+			{#if !!user}
+				<div class="mx-auto w-16">
+					<img
+						src="https://avatars.dicebear.com/api/adventurer/{user.imageSeed}.svg"
+						alt="profile"
+					/>
+				</div>
+			{/if}
+		</div>
 
 		<div>
 			<button
@@ -49,7 +60,7 @@
 
 			<div class="relative">
 				<LoginCornerMenu visible={loginMenu}>
-					{#if authState === AuthState.LoggedIn}
+					{#if authState === AuthState.LoggedIn && user}
 						<Profile {user} />
 					{:else if authState === AuthState.Authorizing}
 						<p>Authorizing</p>
