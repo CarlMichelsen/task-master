@@ -16,10 +16,12 @@ import { RegisterRequest } from "data-transfer-interfaces/auth/registerRequest";
 import { AuthResponse } from "data-transfer-interfaces/auth/authResponse";
 import { AuthRequest } from "data-transfer-interfaces/auth/authRequest";
 import { ClientUser } from "data-transfer-interfaces/user/clientUser";
+import { generateRandomUrlSafeString } from "../mappers/clientTaskboardMapper";
 
 export interface JwtClaims extends JwtPayload {
 	userId: string;
 	accountId: string;
+	imageSeed: string;
 	username: string;
 	email: string;
 	email_verified: boolean;
@@ -127,6 +129,7 @@ export class AuthService {
 			const user: UserAttributes = {
 				id: crypto.randomUUID(),
 				username: request.username,
+				image_seed: generateRandomUrlSafeString(),
 				account_id: account.id,
 				upvotes: 0,
 				online: false,
@@ -171,6 +174,7 @@ export class AuthService {
 	private getClientUserFromUser(user: UserAttributes): ClientUser {
 		return {
 			username: user.username,
+			imageSeed: user.image_seed,
 			online: user.online,
 		};
 	}
@@ -202,6 +206,7 @@ export class AuthService {
 		const claims: JwtClaims = {
 			userId: user.id,
 			accountId: account.id,
+			imageSeed: user.image_seed,
 			username: user.username,
 			email: account.email,
 			email_verified: account.email_verified,

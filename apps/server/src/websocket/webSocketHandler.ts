@@ -13,6 +13,7 @@ import { ISocketData } from "./eventInterfaces/ISocketData";
 
 import { TaskboardRepository } from "../repositories/taskboardRepository";
 import { TaskboardLobby } from "./taskboardLobby";
+import { mapToManyClientUser } from "../mappers/clientUserMapper";
 
 export class WebSocketHandler {
 	lobbies: Map<string, TaskboardLobby>;
@@ -51,8 +52,17 @@ export class WebSocketHandler {
 			if (!exsisting) this.lobbies.set(taskboard.uri, lobby);
 			await socket.join(taskboard.uri);
 			lobby.add(user);
+			this.io
+				.to(taskboard.uri)
+				.emit("updateConnected", mapToManyClientUser(lobby.connected));
 
-			socket.on("disconnect", (reason) => lobby.remove(user));
+			socket.on("disconnect", (reason) => {
+				lobby.remove(user);
+				this.io
+					.to(taskboard.uri)
+					.emit("updateConnected", mapToManyClientUser(lobby.connected));
+				if (lobby.isEmpty()) this.lobbies.delete(taskboard.uri);
+			});
 		});
 	}
 }

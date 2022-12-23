@@ -27,7 +27,7 @@ export const mapManyToClientTaskboards = async (
 	return await Promise.all(promises);
 };
 
-const generateUri = () => {
+export const generateRandomUrlSafeString = () => {
 	return crypto
 		.randomBytes(16)
 		.toString("base64")
@@ -42,10 +42,10 @@ export const uniqueUriGenerator = async (
 		return !exsists;
 	};
 
-	let randomString = generateUri();
+	let randomString = generateRandomUrlSafeString();
 	let uri = randomString.substring(0, length);
 	while (!(await valid(uri))) {
-		randomString = generateUri();
+		randomString = generateRandomUrlSafeString();
 		uri = randomString.substring(0, length);
 	}
 

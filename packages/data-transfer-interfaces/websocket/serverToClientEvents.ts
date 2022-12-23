@@ -1,7 +1,6 @@
-import { AuthResponse } from "../auth/authResponse";
+import { ClientUser } from "../user/clientUser";
 
 export interface IServerToClientEvents {
-	noArg: () => void;
-	login: (authResponse: AuthResponse) => void;
+	updateConnected: (connected: ClientUser[]) => void;
 	withAck: (d: string, callback: (e: number) => void) => void;
 }

@@ -61,11 +61,12 @@ authRouter.get<{}, {}, {}>(
 				user: null,
 			};
 
-			const user = req.claims ?? null;
+			const claims = req.claims ?? null;
 
-			if (user) {
+			if (claims) {
 				const clientUser: ClientUser = {
-					username: user.username,
+					username: claims.username,
+					imageSeed: claims.imageSeed,
 					online: false,
 				};
 

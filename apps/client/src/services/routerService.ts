@@ -3,7 +3,7 @@ export class RouterService {
 		return this.currentRoute;
 	}
 
-	public static set route(newRoute: string) {
+	public static set route(newRoute: string | null) {
 		this.currentRoute = newRoute ?? null;
 		window.location.hash = newRoute ?? "";
 		this.action(newRoute);

@@ -11,6 +11,7 @@ export interface UserAttributes {
 	id: string;
 	account_id: string;
 	username: string;
+	image_seed: string;
 	upvotes: number;
 	online: boolean;
 }
@@ -32,6 +33,10 @@ const User = sequelize.define<Model<UserAttributes, UserCreationAttributes>>(
 			references: {
 				model: Account,
 			},
+		},
+		image_seed: {
+			type: DataTypes.STRING,
+			allowNull: false,
 		},
 		username: {
 			type: DataTypes.STRING,
