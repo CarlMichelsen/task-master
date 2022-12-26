@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
-	import BaseCard from "./BaseCard.svelte";
+	import BaseTaskboardButton from "./BaseTaskboardButton.svelte";
 	import { TaskboardService } from "../../services/taskboardService";
 
 	const dispatch = createEventDispatcher();
@@ -19,11 +19,11 @@
 	};
 </script>
 
-<BaseCard>
+<BaseTaskboardButton>
 	<button
 		class="block h-full w-full rounded-sm hover:bg-green-700 active:bg-green-900 hover:no-underline"
 		on:click={createNewTaskboard}
 	>
 		<p class="text-8xl mt-1">+</p>
 	</button>
-</BaseCard>
+</BaseTaskboardButton>

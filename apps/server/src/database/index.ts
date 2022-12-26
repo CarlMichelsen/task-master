@@ -4,6 +4,8 @@ import { Account } from "./models/account";
 import { Taskboard } from "./models/taskboard";
 import { User } from "./models/user";
 import { UserTaskboard } from "./models/userTaskboard";
+import { Panel } from "./models/panel";
+import { Card } from "./models/card";
 
 const dblog: (sql: string, timing?: number) => void = (
 	sql: string,
@@ -51,6 +53,12 @@ export const syncDb = async (
 
 	await UserTaskboard.sync(options);
 	console.log("UserTaskboard", "synced");
+
+	await Panel.sync(options);
+	console.log("Panel", "synced");
+
+	await Card.sync(options);
+	console.log("Card", "synced");
 
 	console.log("Sync complete!");
 	await callback();

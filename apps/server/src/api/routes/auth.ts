@@ -65,6 +65,7 @@ authRouter.get<{}, {}, {}>(
 
 			if (claims) {
 				const clientUser: ClientUser = {
+					id: claims.userId,
 					username: claims.username,
 					imageSeed: claims.imageSeed,
 					online: false,

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import TaskboardCard from "./Card/TaskboardCard.svelte";
-	import NewTaskboardCard from "./Card/NewTaskboardCard.svelte";
+	import CreateTaskboardButton from "./TaskboardButton/CreateTaskboardButton.svelte";
+	import TaskboardButton from "./TaskboardButton/TaskboardButton.svelte";
 	import Loading from "./Loading.svelte";
 
 	import type { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
@@ -49,9 +49,9 @@
 			<div
 				class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
 			>
-				<NewTaskboardCard on:newTaskboard={handleNewTaskboard} />
+				<CreateTaskboardButton on:newTaskboard={handleNewTaskboard} />
 				{#each taskboards as board}
-					<TaskboardCard
+					<TaskboardButton
 						taskboard={board}
 						{clientData}
 						on:removedTaskboard={handleRemovedTaskboard}

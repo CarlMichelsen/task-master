@@ -132,7 +132,6 @@ export class AuthService {
 				image_seed: generateRandomUrlSafeString(),
 				account_id: account.id,
 				upvotes: 0,
-				online: false,
 			};
 			const createdUser = await this.userRepository.createUser(user);
 
@@ -173,9 +172,10 @@ export class AuthService {
 	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 	private getClientUserFromUser(user: UserAttributes): ClientUser {
 		return {
+			id: user.id,
 			username: user.username,
 			imageSeed: user.image_seed,
-			online: user.online,
+			online: false,
 		};
 	}
 

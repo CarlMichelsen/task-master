@@ -1,7 +1,17 @@
-import { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
-import { Taskboard, TaskboardAttributes } from "../database/models/taskboard";
-import { UserRepository } from "../repositories/userRepository";
 import crypto from "crypto";
+
+import { TaskboardAttributes } from "../database/models/taskboard";
+import { PanelAttributes } from "../database/models/panel";
+
+import { TaskboardRepository } from "../repositories/taskboardRepository";
+import { PanelRepository } from "../repositories/panelRepository";
+import { UserRepository } from "../repositories/userRepository";
+
+import { mapToClientUser, mapToManyClientUser } from "./clientUserMapper";
+import { mapToClientPanel } from "./clientPanelMapper";
+
+import { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
+import { ClientPanel } from "data-transfer-interfaces/panel/clientPanel";
 
 export const mapToClientTaskboard = async (
 	input: TaskboardAttributes
@@ -10,11 +20,28 @@ export const mapToClientTaskboard = async (
 	const owner = await userRepository.getUserById(input.owner_id);
 	if (!owner) throw new Error(`Found taskboard without owner <${input.id}>`);
 
+	const taskboardRepository = new TaskboardRepository();
+	const members = await taskboardRepository.getTaskBoardMembers(input.id);
+
+	const panelRepository = new PanelRepository();
+	const panels: PanelAttributes[] = await panelRepository.getPanelsForTaskboard(
+		input.id
+	);
+
+	const clientPanelPromises: Promise<ClientPanel>[] = [];
+	for (let p of panels) {
+		clientPanelPromises.push(mapToClientPanel(p, input));
+	}
+
+	const clientPanels = await Promise.all(clientPanelPromises);
+
 	return {
 		name: input.taskboard_name,
 		uri: input.uri,
 		backgroundUrl: input.background_url,
-		ownerUsername: owner.username,
+		owner: mapToClientUser(owner),
+		members: mapToManyClientUser(members),
+		panels: clientPanels,
 	};
 };
 
@@ -37,8 +64,9 @@ export const generateRandomUrlSafeString = () => {
 export const uniqueUriGenerator = async (
 	length: number = 6
 ): Promise<string> => {
+	const taskboardRepository = new TaskboardRepository();
 	const valid = async (uri: string): Promise<boolean> => {
-		const exsists = await Taskboard.findOne({ where: { uri } });
+		const exsists = await taskboardRepository.getTaskboardByUri(uri);
 		return !exsists;
 	};
 

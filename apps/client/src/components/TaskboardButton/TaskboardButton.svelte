@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
-	import BaseCard from "./BaseCard.svelte";
+	import BaseTaskboardButton from "./BaseTaskboardButton.svelte";
 
 	import { TaskboardService } from "../../services/taskboardService";
 	import type { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
@@ -43,7 +43,7 @@
 	};
 </script>
 
-<BaseCard>
+<BaseTaskboardButton>
 	{#if taskboard}
 		<div
 			class="h-full w-full flex flex-col transition-colors hover:bg-neutral-600"
@@ -55,7 +55,7 @@
 
 				<div class="absolute top-2 left-2 z-20 pointer-events-none">
 					<p class="text-xs text-neutral-400">
-						{clientData.user?.username === taskboard.ownerUsername
+						{clientData.user?.username === taskboard.owner.username
 							? "You own this taskboard"
 							: ""}
 					</p>
@@ -68,7 +68,7 @@
 				} -mt-8 h-8 z-20`}
 			>
 				<div hidden={!menuToggle} class="flex-1">
-					{#if clientData.user?.username === taskboard.ownerUsername}
+					{#if clientData.user?.username === taskboard.owner.username}
 						<button
 							on:click={deleteTaskboard}
 							class="h-full w-full hover:text-red-900 hover:bg-white"
@@ -102,4 +102,4 @@
 			</div>
 		</div>
 	{/if}
-</BaseCard>
+</BaseTaskboardButton>

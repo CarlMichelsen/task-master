@@ -11,6 +11,7 @@
 	export let authState: AuthState = AuthState.LoggedOut;
 	export let user: ClientUser | null = null;
 	export let loginMenu: boolean = false;
+	export let headerTitle: string | null = null;
 
 	$: changed(authState);
 
@@ -30,7 +31,7 @@
 			on:click={() => (RouterService.route = null)}
 			class="w-36 text-left ml-3"
 		>
-			<h1 class="text-2xl">Task Master</h1>
+			<h1 class="text-2xl">{headerTitle ? headerTitle : "Task Master"}</h1>
 		</button>
 
 		<div>

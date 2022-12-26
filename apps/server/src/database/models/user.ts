@@ -1,11 +1,8 @@
-import { Sequelize, DataTypes, Model, ModelOptions } from "sequelize";
+import { Sequelize, DataTypes, Model } from "sequelize";
 import { Configuration } from "../../configuration";
 import { Account } from "./account";
+import { modelOptions } from "./schema";
 const sequelize = new Sequelize(Configuration.databaseUrl);
-
-const modelOptions: ModelOptions = {
-	schema: "task",
-};
 
 export interface UserAttributes {
 	id: string;
@@ -13,7 +10,6 @@ export interface UserAttributes {
 	username: string;
 	image_seed: string;
 	upvotes: number;
-	online: boolean;
 }
 
 export interface UserCreationAttributes extends UserAttributes {}
@@ -46,11 +42,6 @@ const User = sequelize.define<Model<UserAttributes, UserCreationAttributes>>(
 		upvotes: {
 			type: DataTypes.INTEGER,
 			defaultValue: 0,
-			allowNull: false,
-		},
-		online: {
-			type: DataTypes.BOOLEAN,
-			defaultValue: false,
 			allowNull: false,
 		},
 	},

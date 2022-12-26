@@ -1,10 +1,7 @@
-import { Sequelize, DataTypes, Model, ModelOptions } from "sequelize";
+import { Sequelize, DataTypes, Model } from "sequelize";
 import { Configuration } from "../../configuration";
+import { modelOptions } from "./schema";
 const sequelize = new Sequelize(Configuration.databaseUrl);
-
-const modelOptions: ModelOptions = {
-	schema: "task",
-};
 
 export interface AccountAttributes {
 	id: string;

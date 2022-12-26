@@ -1,11 +1,8 @@
-import { Sequelize, DataTypes, Model, ModelOptions } from "sequelize";
+import { Sequelize, DataTypes, Model } from "sequelize";
 import { Configuration } from "../../configuration";
 import { User } from "./user";
+import { modelOptions } from "./schema";
 const sequelize = new Sequelize(Configuration.databaseUrl);
-
-const modelOptions: ModelOptions = {
-	schema: "task",
-};
 
 export interface TaskboardAttributes {
 	id: string;
