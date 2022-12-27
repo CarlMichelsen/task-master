@@ -7,6 +7,7 @@ import {
 } from "./authValidationService";
 import { AccountRepository } from "../repositories/accountRepository";
 import { UserRepository } from "../repositories/userRepository";
+import { AdministrationService } from "./administrationService";
 
 import { Configuration } from "../configuration";
 import { UserAttributes } from "../database/models/user";
@@ -15,7 +16,6 @@ import { AccountAttributes } from "../database/models/account";
 import { RegisterRequest } from "data-transfer-interfaces/auth/registerRequest";
 import { AuthResponse } from "data-transfer-interfaces/auth/authResponse";
 import { AuthRequest } from "data-transfer-interfaces/auth/authRequest";
-import { ClientUser } from "data-transfer-interfaces/user/clientUser";
 import { generateRandomUrlSafeString } from "../mappers/clientTaskboardMapper";
 
 export interface JwtClaims extends JwtPayload {
@@ -28,6 +28,7 @@ export interface JwtClaims extends JwtPayload {
 }
 
 export class AuthService {
+	private adminService = new AdministrationService();
 	private accountRepository = new AccountRepository();
 	private userRepository = new UserRepository();
 	private valid = new AuthValidationService(
@@ -76,7 +77,11 @@ export class AuthService {
 				return res;
 			}
 			res.jwt = this.createToken(account, user);
-			res.user = this.getClientUserFromUser(user);
+			res.user = await this.adminService.getPrivateClientUser(
+				undefined,
+				user,
+				account
+			);
 			res.complete = true;
 			console.log(`"${user.username}" logged in with email ${account.email}`);
 			return res;
@@ -149,7 +154,11 @@ export class AuthService {
 			}
 
 			res.jwt = this.createToken(account, user);
-			res.user = this.getClientUserFromUser(user);
+			res.user = await this.adminService.getPrivateClientUser(
+				undefined,
+				user,
+				account
+			);
 			res.complete = true;
 			console.log(
 				`New registration by "${user.username}" with email "${account.email}!`
@@ -161,22 +170,13 @@ export class AuthService {
 		return res;
 	}
 
+	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 	private hashSaltPair(password: string): { hash: string; salt: string } {
 		const salt = crypto.randomBytes(16).toString("hex");
 		const hash = crypto
 			.pbkdf2Sync(password, salt, 1000, 64, "sha512")
 			.toString("hex");
 		return { hash, salt };
-	}
-
-	// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-	private getClientUserFromUser(user: UserAttributes): ClientUser {
-		return {
-			id: user.id,
-			username: user.username,
-			imageSeed: user.image_seed,
-			online: false,
-		};
 	}
 
 	private async registerRequestValidation(

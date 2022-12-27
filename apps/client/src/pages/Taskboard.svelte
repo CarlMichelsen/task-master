@@ -9,7 +9,10 @@
 	import { TaskboardService } from "../services/taskboardService";
 	import { RouterService } from "../services/routerService";
 	import { WebsocketService } from "../services/websocketService";
-	import { mergeClientUserLists } from "../util/mergeList";
+	import {
+		mergeClientUserLists,
+		sortClientUserList,
+	} from "../util/clientUserUtil";
 
 	import type { ClientUser } from "data-transfer-interfaces/user/clientUser";
 
@@ -22,7 +25,10 @@
 			$TaskboardStore?.members ?? [],
 			allConnected
 		);
-		TaskboardStore.set({ ...$TaskboardStore, members: allMembers });
+		TaskboardStore.set({
+			...$TaskboardStore,
+			members: allMembers.sort(sortClientUserList($ClientDataStore?.user?.id)),
+		});
 	};
 
 	const onConnectedJoin = (connected: ClientUser) => {
@@ -30,7 +36,10 @@
 		const allMembers = mergeClientUserLists($TaskboardStore?.members ?? [], [
 			connected,
 		]);
-		TaskboardStore.set({ ...$TaskboardStore, members: allMembers });
+		TaskboardStore.set({
+			...$TaskboardStore,
+			members: allMembers.sort(sortClientUserList($ClientDataStore?.user?.id)),
+		});
 	};
 
 	const onConnectedLeave = (disconnected: ClientUser) => {
@@ -39,7 +48,10 @@
 		const leaveIdx = allMembers.findIndex((u) => u.id === disconnected.id);
 		if (leaveIdx === -1) return;
 		allMembers[leaveIdx].online = false;
-		TaskboardStore.set({ ...$TaskboardStore, members: allMembers });
+		TaskboardStore.set({
+			...$TaskboardStore,
+			members: allMembers.sort(sortClientUserList($ClientDataStore?.user?.id)),
+		});
 	};
 
 	const connectWebsocket = (jwt: string, uri: string) => {

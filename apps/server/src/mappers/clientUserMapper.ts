@@ -9,6 +9,7 @@ export const mapToClientUser = (
 		id: input.id,
 		username: input.username,
 		imageSeed: input.image_seed,
+		upvotes: input.upvotes,
 		online: online,
 	};
 };

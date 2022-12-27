@@ -52,7 +52,7 @@ authRouter.post<{}, {}, AuthRequest>(
 authRouter.get<{}, {}, {}>(
 	"/",
 	authMiddleware,
-	(req: Request, res: Response) => {
+	async (req: Request, res: Response) => {
 		try {
 			const authRes: AuthResponse = {
 				complete: false,
@@ -64,17 +64,13 @@ authRouter.get<{}, {}, {}>(
 			const claims = req.claims ?? null;
 
 			if (claims) {
-				const clientUser: ClientUser = {
-					id: claims.userId,
-					username: claims.username,
-					imageSeed: claims.imageSeed,
-					online: false,
-				};
+				const adminService = new AdministrationService();
+				const clientUserPromise = adminService.getPrivateClientUser(claims);
 
 				const jwt = req.header("Authorization") || null;
 				authRes.complete = true;
 				authRes.jwt = jwt ? jwt.split(" ")[1] : null;
-				authRes.user = clientUser;
+				authRes.user = await clientUserPromise;
 
 				res.status(200).send(authRes);
 			} else {

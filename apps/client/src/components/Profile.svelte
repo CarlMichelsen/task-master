@@ -16,8 +16,7 @@
 </script>
 
 <div>
-	<p class="text-lg">{$ClientDataStore?.user?.username}</p>
-	<br />
+	<p class="text-lg">Manage</p>
 	<button
 		class="text-xl bg-neutral-500 hover:bg-neutral-600 h-12 w-full mb-1"
 		on:click={logout}>Logout</button

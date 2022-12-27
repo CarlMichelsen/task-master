@@ -1,6 +1,11 @@
+import { ClientUser } from "data-transfer-interfaces/user/clientUser";
 import { AccountRepository } from "../repositories/accountRepository";
 import { UserRepository } from "../repositories/userRepository";
+import { JwtClaims } from "./authService";
 import { TaskboardService } from "./taskboardService";
+import { mapToClientUser } from "../mappers/clientUserMapper";
+import { UserAttributes } from "../database/models/user";
+import { AccountAttributes } from "../database/models/account";
 
 export class AdministrationService {
 	private readonly taskboardService = new TaskboardService();
@@ -37,5 +42,33 @@ export class AdministrationService {
 
 		if (!deletedAccount)
 			throw new Error(`Failed to delete account <${account.id}>`);
+	}
+
+	public async getPrivateClientUser(
+		claims?: JwtClaims,
+		userInput?: UserAttributes,
+		accountInput?: AccountAttributes
+	): Promise<ClientUser> {
+		const userPromise = userInput
+			? new Promise<UserAttributes>((resolve) => resolve(userInput))
+			: this.userRepository.getUserById(claims?.userId ?? "");
+
+		const accountPromise = accountInput
+			? new Promise<AccountAttributes>((resolve) => resolve(accountInput))
+			: this.accountRepository.getAccountById(claims?.accountId ?? "");
+
+		const user = await userPromise;
+		if (!user) throw new Error("Could not find user");
+		const account = await accountPromise;
+		if (!account) throw new Error("Could not find account");
+
+		const simpleClientUser = mapToClientUser(user);
+		simpleClientUser.accountData = {
+			fullName: account.fullname,
+			email: account.email,
+			emailVerified: account.email_verified,
+		};
+
+		return simpleClientUser;
 	}
 }
