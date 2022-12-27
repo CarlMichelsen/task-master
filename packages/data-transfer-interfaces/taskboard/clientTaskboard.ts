@@ -1,5 +1,5 @@
-import { ClientUser } from "../user/clientUser";
-import { ClientPanel } from "../panel/clientPanel";
+import type { ClientUser } from "../user/clientUser";
+import type { ClientPanel } from "../panel/clientPanel";
 
 export interface ClientTaskboard {
 	name: string;

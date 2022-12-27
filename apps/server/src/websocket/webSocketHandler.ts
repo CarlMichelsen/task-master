@@ -16,6 +16,8 @@ import {
 	mapToManyClientUser,
 } from "../mappers/clientUserMapper";
 import { delay } from "../delay";
+import { PanelAttributes } from "../database/models/panel";
+import { mapToClientPanel } from "../mappers/clientPanelMapper";
 
 export class WebSocketHandler {
 	lobbies: Map<string, TaskboardLobby>;
@@ -72,6 +74,21 @@ export class WebSocketHandler {
 			await delay(50);
 
 			this.io.to(uri).emit("onConnectedJoin", mapToClientUser(user, true));
+
+			socket.on(
+				"createTaskboardPanel",
+				async (title: string, sortOrder: number) => {
+					const panel: PanelAttributes | null =
+						(await lobby?.createTaskboardPanel(title, sortOrder)) ?? null;
+					if (!panel) return;
+					this.io
+						.to(uri)
+						.emit(
+							"newTaskboardPanel",
+							await mapToClientPanel(panel, lobby?.taskboard)
+						);
+				}
+			);
 
 			socket.on("disconnect", () => {
 				console.log(`disconnected ${user.username}`);

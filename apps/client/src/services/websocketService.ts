@@ -3,11 +3,14 @@ import type { IServerToClientEvents } from "data-transfer-interfaces/websocket/s
 import type { IClientToServerEvents } from "data-transfer-interfaces/websocket/clientToServerEvents";
 import { host } from "../util/host";
 import type { ClientUser } from "data-transfer-interfaces/user/clientUser";
+import type { ClientPanel } from "data-transfer-interfaces/panel/clientPanel";
 
 export class WebsocketService {
-	static socket: Socket<IServerToClientEvents, IClientToServerEvents> | null =
-		null;
-	static ready: boolean = true;
+	private static socket: Socket<
+		IServerToClientEvents,
+		IClientToServerEvents
+	> | null = null;
+	static ready: boolean = false;
 
 	static onConnect: (() => void) | null = null;
 	static onDisconnect: (() => void) | null = null;
@@ -15,6 +18,13 @@ export class WebsocketService {
 		null;
 	static onConnectedJoin: ((connectedList: ClientUser) => void) | null = null;
 	static onConnectedLeave: ((connectedList: ClientUser) => void) | null = null;
+
+	static onNewTaskboardPanel: ((panel: ClientPanel) => void) | null = null;
+
+	static createTaskboardPanel(title: string, sortOrder: number) {
+		if (!this.ready) throw new Error("No active websocket connection!");
+		this.socket?.emit("createTaskboardPanel", title, sortOrder);
+	}
 
 	static connect(jwt: string, taskboardUri: string) {
 		// disconnect if already connected
@@ -25,10 +35,16 @@ export class WebsocketService {
 			auth: { jwt, uri: taskboardUri },
 			path: "/socket",
 		});
+		this.ready = true;
 
 		this.socket.on("connect", () => {
 			console.log("connect");
 			this.onConnect && this.onConnect();
+		});
+
+		this.socket.on("newTaskboardPanel", (panel) => {
+			console.log("newTaskboardPanel", panel);
+			this.onNewTaskboardPanel && this.onNewTaskboardPanel(panel);
 		});
 
 		this.socket.on("updateConnected", (connected) => {

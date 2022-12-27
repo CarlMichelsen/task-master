@@ -15,7 +15,7 @@ export class TaskboardValidationService {
 			return res;
 		}
 
-		if (taskboardName.length <= 3) {
+		if (taskboardName.length < 3) {
 			res.errors.push("Taskboard names need to be 3 characters or more");
 			return res;
 		}

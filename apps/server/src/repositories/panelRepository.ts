@@ -1,4 +1,9 @@
-import { Panel, PanelAttributes } from "../database/models/panel";
+import crypto from "crypto";
+import {
+	Panel,
+	PanelAttributes,
+	PanelCreationAttributes,
+} from "../database/models/panel";
 import { TaskboardService } from "../services/taskboardService";
 
 export class PanelRepository {
@@ -26,5 +31,30 @@ export class PanelRepository {
 			throw new Error(`Could not find taskboard for uri <${taskboardUri}>`);
 
 		return await this.getPanelsForTaskboard(taskboard.id);
+	}
+
+	panelFactory(
+		title: string,
+		sortOrder: number,
+		taskboardId: string
+	): PanelAttributes {
+		return {
+			id: crypto.randomUUID(),
+			taskboard_id: taskboardId,
+			title: title,
+			sort_order: sortOrder,
+		};
+	}
+
+	async createPanelForTaskboard(
+		panel: PanelCreationAttributes
+	): Promise<PanelAttributes | null> {
+		try {
+			const createdPanel = await Panel.create(panel);
+			return createdPanel.dataValues;
+		} catch (error) {
+			console.log(error);
+			return null;
+		}
 	}
 }

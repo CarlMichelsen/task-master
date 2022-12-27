@@ -1,3 +1,3 @@
 export interface IClientToServerEvents {
-	hello: () => void;
+	createTaskboardPanel: (title: string, sortOrder: number) => void;
 }

@@ -4,6 +4,7 @@
 	import { ClientDataStore } from "../stores/client";
 
 	import Header from "../components/Header.svelte";
+	import TaskboardHandler from "../components/Taskboard/TaskboardHandler.svelte";
 	import Loading from "../components/Loading.svelte";
 
 	import { TaskboardService } from "../services/taskboardService";
@@ -12,9 +13,11 @@
 	import {
 		mergeClientUserLists,
 		sortClientUserList,
-	} from "../util/clientUserUtil";
+		mergeClientPanelLists,
+	} from "../util/listUtil";
 
 	import type { ClientUser } from "data-transfer-interfaces/user/clientUser";
+	import type { ClientPanel } from "data-transfer-interfaces/panel/clientPanel";
 
 	export let taskboardUri: string | null = null;
 
@@ -54,11 +57,23 @@
 		});
 	};
 
+	const onNewTaskboardPanel = (panel: ClientPanel) => {
+		if (!$TaskboardStore) return;
+		const allPanels = $TaskboardStore.panels;
+		TaskboardStore.set({
+			...$TaskboardStore,
+			panels: mergeClientPanelLists(allPanels, [panel]).sort(
+				(p1, p2) => p1.sortOrder - p2.sortOrder
+			),
+		});
+	};
+
 	const connectWebsocket = (jwt: string, uri: string) => {
 		WebsocketService.connect(jwt, uri);
 		WebsocketService.onUpdateConnected = onForceUpdateConnected;
 		WebsocketService.onConnectedJoin = onConnectedJoin;
 		WebsocketService.onConnectedLeave = onConnectedLeave;
+		WebsocketService.onNewTaskboardPanel = onNewTaskboardPanel;
 	};
 
 	const disconnectWebsocket = () => {
@@ -96,10 +111,7 @@
 	<Header headerTitle={$TaskboardStore?.name ?? undefined} />
 	{#if $TaskboardStore !== null && $ClientDataStore?.user}
 		<div>
-			<p>Current taskboard name: "{$TaskboardStore.name}"</p>
-			{#each $TaskboardStore.members as member}
-				<p>{member.username} - {member.online}</p>
-			{/each}
+			<TaskboardHandler />
 		</div>
 	{:else}
 		<Loading />

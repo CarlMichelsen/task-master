@@ -1,3 +1,4 @@
+import type { ClientPanel } from "data-transfer-interfaces/panel/clientPanel";
 import type { ClientUser } from "data-transfer-interfaces/user/clientUser";
 
 export const mergeClientUserLists = (
@@ -20,6 +21,16 @@ export const sortClientUserList = (
 			numericalClientUser(u1, clientId) - numericalClientUser(u2, clientId)
 		);
 	};
+};
+
+export const mergeClientPanelLists = (
+	baseList: ClientPanel[],
+	priorityList: ClientPanel[]
+) => {
+	const panelMap = new Map<string, ClientPanel>();
+	baseList.forEach((u) => panelMap.set(u.id, u));
+	priorityList.forEach((u) => panelMap.set(u.id, u));
+	return Array.from(panelMap.values());
 };
 
 export const numericalClientUser = (

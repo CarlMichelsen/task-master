@@ -8,6 +8,7 @@ export interface PanelAttributes {
 	id: string;
 	taskboard_id: string;
 	title: string;
+	sort_order: number;
 }
 
 export interface PanelCreationAttributes extends PanelAttributes {}
@@ -29,6 +30,10 @@ const Panel = sequelize.define<Model<PanelAttributes, PanelCreationAttributes>>(
 		},
 		title: {
 			type: DataTypes.STRING,
+			allowNull: false,
+		},
+		sort_order: {
+			type: DataTypes.DOUBLE,
 			allowNull: false,
 		},
 	},

@@ -10,6 +10,7 @@ export interface CardAttributes {
 	panel_id: string;
 	title: string;
 	owner?: string;
+	sort_order: number;
 }
 
 export interface CardCreationAttributes extends CardAttributes {}
@@ -39,6 +40,10 @@ const Card = sequelize.define<Model<CardAttributes, CardCreationAttributes>>(
 			references: {
 				model: User,
 			},
+		},
+		sort_order: {
+			type: DataTypes.DOUBLE,
+			allowNull: false,
 		},
 	},
 	modelOptions
