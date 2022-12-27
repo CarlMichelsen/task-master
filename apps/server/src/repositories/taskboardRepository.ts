@@ -41,6 +41,22 @@ export class TaskboardRepository {
 		return taskboard?.dataValues ?? null;
 	}
 
+	public async naiveJoinTaskboard(
+		taskboardId: string,
+		userId: string
+	): Promise<boolean> {
+		try {
+			await UserTaskboard.create({
+				taskboard_id: taskboardId,
+				user_id: userId,
+			});
+			return true;
+		} catch (error: any) {
+			if (error["name"] === "SequelizeUniqueConstraintError") return true; // user already joined
+			return false;
+		}
+	}
+
 	public async joinTaskboard(
 		taskboardId: string,
 		userId: string

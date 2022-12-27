@@ -15,6 +15,7 @@ import {
 	mapToClientUser,
 	mapToManyClientUser,
 } from "../mappers/clientUserMapper";
+import { delay } from "../delay";
 
 export class WebSocketHandler {
 	lobbies: Map<string, TaskboardLobby>;
@@ -40,14 +41,20 @@ export class WebSocketHandler {
 			const claims = AuthService.authenticate(socket.handshake.auth.jwt);
 			const uri: string = socket.handshake.auth.uri;
 
-			const user = await getUser(claims);
+			const userPromise = getUser(claims);
+			const taskboardPromise = joinTaskboard(claims, uri);
+
+			const user = await userPromise;
 			if (!user) return socket.disconnect();
 
-			const taskboard = await joinTaskboard(claims, uri);
+			const taskboard = await taskboardPromise;
 			if (!taskboard) return socket.disconnect();
 
-			let lobby = this.lobbies.get(uri);
-			if (!lobby) lobby = new TaskboardLobby(taskboard);
+			let lobby = this.lobbies.get(uri) ?? null;
+			if (!lobby) {
+				lobby = new TaskboardLobby(taskboard);
+				this.lobbies.set(uri, lobby);
+			}
 
 			socket.join(uri);
 			lobby.join(user);
@@ -55,8 +62,14 @@ export class WebSocketHandler {
 			// *excludingUser
 			const initialConnected = lobby.connected.filter((u) => u.id !== user.id);
 			if (initialConnected.length > 0) {
-				socket.emit("updateConnected", mapToManyClientUser(initialConnected));
+				console.log("updateConnected");
+				socket.emit(
+					"updateConnected",
+					mapToManyClientUser(initialConnected, true)
+				);
 			}
+
+			await delay(50);
 
 			this.io.to(uri).emit("onConnectedJoin", mapToClientUser(user, true));
 

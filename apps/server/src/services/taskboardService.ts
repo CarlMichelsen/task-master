@@ -32,7 +32,11 @@ export class TaskboardService {
 			taskboardUri
 		);
 		if (!taskboard) return null;
-		return await this.taskboardRepository.joinTaskboard(taskboard.id, userId);
+		const joined = await this.taskboardRepository.naiveJoinTaskboard(
+			taskboard.id,
+			userId
+		);
+		return joined ? taskboard : null;
 	}
 
 	public async leaveTaskboard(

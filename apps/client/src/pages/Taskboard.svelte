@@ -16,6 +16,7 @@
 	export let taskboardUri: string | null = null;
 
 	const onForceUpdateConnected = (allConnected: ClientUser[]) => {
+		console.log("force", allConnected);
 		if (!$TaskboardStore) return;
 		const allMembers = mergeClientUserLists(
 			$TaskboardStore?.members ?? [],
