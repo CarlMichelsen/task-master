@@ -13,6 +13,8 @@ export class WebsocketService {
 	static onDisconnect: (() => void) | null = null;
 	static onUpdateConnected: ((connectedList: ClientUser[]) => void) | null =
 		null;
+	static onConnectedJoin: ((connectedList: ClientUser) => void) | null = null;
+	static onConnectedLeave: ((connectedList: ClientUser) => void) | null = null;
 
 	static connect(jwt: string, taskboardUri: string) {
 		// disconnect if already connected
@@ -32,6 +34,16 @@ export class WebsocketService {
 		this.socket.on("updateConnected", (connected) => {
 			console.log("updateConnected", connected);
 			this.onUpdateConnected && this.onUpdateConnected(connected);
+		});
+
+		this.socket.on("onConnectedJoin", (connected) => {
+			console.log("onConnectedJoin", connected);
+			this.onConnectedJoin && this.onConnectedJoin(connected);
+		});
+
+		this.socket.on("onConnectedLeave", (connected) => {
+			console.log("onConnectedLeave", connected);
+			this.onConnectedLeave && this.onConnectedLeave(connected);
 		});
 
 		this.socket.on("disconnect", () => {

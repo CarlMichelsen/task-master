@@ -1,15 +1,15 @@
 <script lang="ts">
+	import { ClientDataStore } from "../stores/client";
+
 	import CreateTaskboardButton from "./TaskboardButton/CreateTaskboardButton.svelte";
 	import TaskboardButton from "./TaskboardButton/TaskboardButton.svelte";
 	import Loading from "./Loading.svelte";
 
 	import type { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
-	import type { ClientData } from "../models/clientData";
 
 	import { TaskboardService } from "../services/taskboardService";
 	import { RouterService } from "../services/routerService";
 
-	export let clientData: ClientData;
 	let taskboards: ClientTaskboard[] | null = null;
 
 	const getTaskboards = async () => {
@@ -43,7 +43,7 @@
 </script>
 
 <div>
-	{#if taskboards !== null}
+	{#if taskboards !== null && $ClientDataStore}
 		<div class="mx-auto container">
 			<br />
 			<div
@@ -53,7 +53,7 @@
 				{#each taskboards as board}
 					<TaskboardButton
 						taskboard={board}
-						{clientData}
+						clientData={$ClientDataStore}
 						on:removedTaskboard={handleRemovedTaskboard}
 						on:clickedTaskboard={handleClickTaskboard}
 					/>

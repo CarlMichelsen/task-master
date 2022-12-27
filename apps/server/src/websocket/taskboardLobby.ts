@@ -13,7 +13,7 @@ export class TaskboardLobby {
 		return this.connected.findIndex((u) => u.id === user.id);
 	}
 
-	add(user: UserAttributes) {
+	join(user: UserAttributes) {
 		if (this.alreadyConnectedId(user) !== -1) return;
 		const joinMsg = `"${user.username}" connected to taskboard "${this.taskboard.taskboard_name}"`;
 		console.log(joinMsg);
@@ -24,7 +24,7 @@ export class TaskboardLobby {
 		return this.connected.length === 0;
 	}
 
-	remove(user: UserAttributes) {
+	leave(user: UserAttributes) {
 		const id = this.alreadyConnectedId(user);
 		if (id === -1) return;
 		const leaveMsg = `"${user.username}" disconnected from taskboard "${this.taskboard.taskboard_name}"`;

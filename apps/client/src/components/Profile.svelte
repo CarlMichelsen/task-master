@@ -1,8 +1,6 @@
 <script lang="ts">
-	import type { ClientUser } from "data-transfer-interfaces/user/clientUser";
+	import { ClientDataStore } from "../stores/client";
 	import { AuthService } from "../services/authService";
-
-	export let user: ClientUser;
 
 	const logout = () => {
 		AuthService.logout();
@@ -12,12 +10,13 @@
 		const usernameTypedIn = prompt(
 			"Provide your username to confirm deletion."
 		);
-		if (usernameTypedIn === user.username) AuthService.deleteAccount();
+		if (usernameTypedIn === $ClientDataStore?.user?.username)
+			AuthService.deleteAccount();
 	};
 </script>
 
 <div>
-	<p class="text-lg">{user.username}</p>
+	<p class="text-lg">{$ClientDataStore?.user?.username}</p>
 	<br />
 	<button
 		class="text-xl bg-neutral-500 hover:bg-neutral-600 h-12 w-full mb-1"

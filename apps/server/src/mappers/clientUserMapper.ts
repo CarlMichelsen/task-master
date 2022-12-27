@@ -13,6 +13,9 @@ export const mapToClientUser = (
 	};
 };
 
-export const mapToManyClientUser = (input: UserAttributes[]): ClientUser[] => {
-	return input.map((u) => mapToClientUser(u));
+export const mapToManyClientUser = (
+	input: UserAttributes[],
+	online: boolean = false
+): ClientUser[] => {
+	return input.map((u) => mapToClientUser(u, online));
 };

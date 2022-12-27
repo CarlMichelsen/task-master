@@ -1,42 +1,56 @@
 <script lang="ts">
 	import { onDestroy } from "svelte";
+	import { TaskboardStore } from "../stores/taskboard";
+	import { ClientDataStore } from "../stores/client";
+
 	import Header from "../components/Header.svelte";
 	import Loading from "../components/Loading.svelte";
 
 	import { TaskboardService } from "../services/taskboardService";
 	import { RouterService } from "../services/routerService";
 	import { WebsocketService } from "../services/websocketService";
+	import { mergeClientUserLists } from "../util/mergeList";
 
-	import type { ClientData } from "../models/clientData";
-	import type { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
 	import type { ClientUser } from "data-transfer-interfaces/user/clientUser";
-	import CornerMembers from "../components/Connected/CornerMembers.svelte";
 
-	export let clientData: ClientData;
 	export let taskboardUri: string | null = null;
 
-	let taskboard: ClientTaskboard | null = null;
-
-	const onUpdateConnected = (connectedList: ClientUser[]) => {
-		if (!taskboard) return;
-		const newUsers = taskboard.members.filter((m) =>
-			connectedList.find((c) => c.id === m.id)
+	const onForceUpdateConnected = (allConnected: ClientUser[]) => {
+		if (!$TaskboardStore) return;
+		const allMembers = mergeClientUserLists(
+			$TaskboardStore?.members ?? [],
+			allConnected
 		);
+		TaskboardStore.set({ ...$TaskboardStore, members: allMembers });
+	};
 
-		for (let usr of newUsers) {
-			const exsistingIdx =
-				taskboard.members.findIndex((u) => u.id === usr.id) ?? null;
-			if (exsistingIdx === -1) {
-				taskboard.members.push({ ...usr, online: true });
-			}
-		}
+	const onConnectedJoin = (connected: ClientUser) => {
+		if (!$TaskboardStore) return;
+		const allMembers = mergeClientUserLists($TaskboardStore?.members ?? [], [
+			connected,
+		]);
+		TaskboardStore.set({ ...$TaskboardStore, members: allMembers });
+	};
 
-		for (let usr of taskboard.members) {
-			const exsisting = !!connectedList.find((u) => u.id === usr.id) ?? null;
-			usr.online = exsisting;
-		}
+	const onConnectedLeave = (disconnected: ClientUser) => {
+		if (!$TaskboardStore) return;
+		const allMembers = $TaskboardStore?.members ?? [];
+		const leaveIdx = allMembers.findIndex((u) => u.id === disconnected.id);
+		if (leaveIdx === -1) return;
+		allMembers[leaveIdx].online = false;
+		TaskboardStore.set({ ...$TaskboardStore, members: allMembers });
+	};
 
-		taskboard = { ...taskboard };
+	const connectWebsocket = (jwt: string, uri: string) => {
+		WebsocketService.connect(jwt, uri);
+		WebsocketService.onUpdateConnected = onForceUpdateConnected;
+		WebsocketService.onConnectedJoin = onConnectedJoin;
+		WebsocketService.onConnectedLeave = onConnectedLeave;
+	};
+
+	const disconnectWebsocket = () => {
+		WebsocketService.disconnect();
+		RouterService.route = null;
 	};
 
 	const getTaskboard = async (uri: string | null) => {
@@ -44,37 +58,35 @@
 			if (!uri) throw new Error("Invalid taskboard");
 			const res = await TaskboardService.getTaskboardByUri(uri);
 			if (res.ok) {
-				taskboard = res.data ?? null;
-				if (!taskboard || !clientData.jwt) throw new Error("Invalid taskboard");
-				WebsocketService.connect(clientData.jwt, taskboard.uri);
-				WebsocketService.onUpdateConnected = onUpdateConnected;
+				const nextTaskboard = res.data ?? null;
+				if (!nextTaskboard || !$ClientDataStore?.jwt)
+					throw new Error("Invalid taskboard");
+				TaskboardStore.set(nextTaskboard);
+				connectWebsocket($ClientDataStore.jwt, nextTaskboard.uri); // connect
 			} else {
-				WebsocketService.disconnect();
+				disconnectWebsocket(); // disconnect
 			}
 		} catch (error) {
-			WebsocketService.disconnect();
-			RouterService.route = null;
+			disconnectWebsocket(); // disconnect
 		}
 	};
 
 	$: getTaskboard(taskboardUri);
 
 	onDestroy(() => {
+		TaskboardStore.set(null);
 		WebsocketService.disconnect();
 	});
 </script>
 
 <div>
-	<Header
-		authState={clientData.authState}
-		user={clientData.user}
-		headerTitle={taskboard?.name ?? undefined}
-	/>
-	{#if taskboard !== null && clientData.user}
-		<div class="relative">
-			<div class="absolute left-0 top-0">
-				<CornerMembers users={taskboard.members} client={clientData.user} />
-			</div>
+	<Header headerTitle={$TaskboardStore?.name ?? undefined} />
+	{#if $TaskboardStore !== null && $ClientDataStore?.user}
+		<div>
+			<p>Current taskboard name: "{$TaskboardStore.name}"</p>
+			{#each $TaskboardStore.members as member}
+				<p>{member.username} - {member.online}</p>
+			{/each}
 		</div>
 	{:else}
 		<Loading />

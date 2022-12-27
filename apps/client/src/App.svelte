@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onDestroy } from "svelte";
+	import { ClientDataStore } from "./stores/client"; // store
 
 	import Home from "./pages/Home.svelte";
 	import Taskboard from "./pages/Taskboard.svelte";
@@ -17,10 +18,9 @@
 	const hashchange = () => RouterService.init();
 	const routeChange = (newRoute: string | null) => (route = newRoute);
 
-	let clientData: ClientData | null = null;
 	AuthService.onStateChange = async (newClientData: ClientData | null) => {
-		clientData = newClientData ? { ...newClientData } : null;
-		console.log(AuthState[clientData?.authState ?? 0]);
+		ClientDataStore.set(newClientData);
+		console.log(AuthState[newClientData?.authState ?? 0]);
 	};
 
 	RouterService.onRouteChange = routeChange;
@@ -35,13 +35,16 @@
 </script>
 
 <main class="h-full w-full">
-	{#if clientData?.authState === AuthState.LoggedOut}
-		<LandingZone authState={clientData.authState} user={clientData.user} />
-	{:else if clientData?.authState === AuthState.LoggedIn}
+	{#if $ClientDataStore?.authState === AuthState.LoggedOut}
+		<LandingZone
+			authState={$ClientDataStore.authState}
+			user={$ClientDataStore.user}
+		/>
+	{:else if $ClientDataStore?.authState === AuthState.LoggedIn}
 		{#if !route}
-			<Home {clientData} />
+			<Home />
 		{:else}
-			<Taskboard {clientData} taskboardUri={route ? route : null} />
+			<Taskboard taskboardUri={route ? route : null} />
 		{/if}
 	{:else}
 		<Loading />

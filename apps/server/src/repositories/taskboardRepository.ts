@@ -44,21 +44,24 @@ export class TaskboardRepository {
 	public async joinTaskboard(
 		taskboardId: string,
 		userId: string
-	): Promise<boolean> {
+	): Promise<TaskboardAttributes | null> {
 		const user = await User.findByPk(userId);
-		if (!user) return false;
+		if (!user) return null;
 
 		const taskboard = await Taskboard.findByPk(taskboardId);
-		if (!taskboard) return false;
+		if (!taskboard?.dataValues) return null;
 
 		try {
 			await UserTaskboard.create({
 				taskboard_id: taskboard.dataValues.id,
 				user_id: user.dataValues.id,
 			});
-			return true;
-		} catch (error) {
-			return false;
+			return taskboard.dataValues ?? null;
+		} catch (error: any) {
+			if (error["name"] === "SequelizeUniqueConstraintError")
+				return taskboard?.dataValues ?? null; // user already joined
+
+			return null;
 		}
 	}
 

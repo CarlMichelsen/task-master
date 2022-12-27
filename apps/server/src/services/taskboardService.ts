@@ -20,8 +20,19 @@ export class TaskboardService {
 	public async joinTaskboard(
 		taskboardId: string,
 		userId: string
-	): Promise<boolean> {
+	): Promise<TaskboardAttributes | null> {
 		return await this.taskboardRepository.joinTaskboard(taskboardId, userId);
+	}
+
+	public async joinTaskboardByUri(
+		taskboardUri: string,
+		userId: string
+	): Promise<TaskboardAttributes | null> {
+		const taskboard = await this.taskboardRepository.getTaskboardByUri(
+			taskboardUri
+		);
+		if (!taskboard) return null;
+		return await this.taskboardRepository.joinTaskboard(taskboard.id, userId);
 	}
 
 	public async leaveTaskboard(
