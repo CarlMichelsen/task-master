@@ -28,8 +28,8 @@ export class AuthValidationService {
 			return res;
 		}
 
-		if (password.length <= 6) {
-			res.errors.push("Password must be longer than 6 characters");
+		if (password.length < 6) {
+			res.errors.push("Password must be at least 6 characters");
 		}
 
 		return res;
@@ -48,6 +48,10 @@ export class AuthValidationService {
 
 		if (username.length <= 2) {
 			res.errors.push("Username must be longer than 2 characters");
+		}
+
+		if (username.length > 32) {
+			res.errors.push("Username can't be longer than 32 characters");
 		}
 
 		if (!registering) return res; // the rest of the validation is only relevant for registration
@@ -72,7 +76,7 @@ export class AuthValidationService {
 			return res;
 		}
 
-		if (email.length <= 6) {
+		if (email.length < 6) {
 			res.errors.push("Email must be at least 6 characters long");
 		}
 

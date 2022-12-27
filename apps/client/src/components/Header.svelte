@@ -70,7 +70,7 @@
 			{#if $ClientDataStore?.authState !== AuthState.LoggedIn}
 				<button
 					disabled={$ClientDataStore?.authState === AuthState.Authorizing}
-					class={`lg:h-16 ${
+					class={`h-16 ${
 						loginMenu
 							? "bg-green-700 hover:bg-green-800"
 							: "bg-slate-600 hover:bg-slate-700"

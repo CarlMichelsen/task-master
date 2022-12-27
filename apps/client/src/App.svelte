@@ -36,10 +36,7 @@
 
 <main class="h-full w-full">
 	{#if $ClientDataStore?.authState === AuthState.LoggedOut}
-		<LandingZone
-			authState={$ClientDataStore.authState}
-			user={$ClientDataStore.user}
-		/>
+		<LandingZone />
 	{:else if $ClientDataStore?.authState === AuthState.LoggedIn}
 		{#if !route}
 			<Home />
