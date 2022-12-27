@@ -78,8 +78,14 @@ export class WebSocketHandler {
 				if (!lobby) throw new Error("Lobby should exsist on disconnect");
 				lobby.leave(user);
 				this.io.to(uri).emit("onConnectedLeave", mapToClientUser(user, true));
-				if (lobby.isEmpty() && lobby.taskboard.uri)
+				if (lobby.isEmpty() && lobby.taskboard.uri) {
+					console.log(
+						"lobby for taskboard",
+						`"${lobby.taskboard.taskboard_name}"`,
+						"was shut down"
+					);
 					this.lobbies.delete(lobby?.taskboard.uri);
+				}
 			});
 		});
 	}

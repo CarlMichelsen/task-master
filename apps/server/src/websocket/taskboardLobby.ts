@@ -7,6 +7,11 @@ export class TaskboardLobby {
 
 	constructor(taskboard: TaskboardAttributes) {
 		this.taskboard = taskboard;
+		console.log(
+			"lobby for taskboard",
+			`"${taskboard.taskboard_name}"`,
+			"was created"
+		);
 	}
 
 	private alreadyConnectedId(user: UserAttributes): number {
