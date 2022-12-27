@@ -2,7 +2,13 @@ import { Taskboard, TaskboardAttributes } from "../database/models/taskboard";
 import { User, UserAttributes } from "../database/models/user";
 import { UserTaskboard } from "../database/models/userTaskboard";
 
+import { CardRepository } from "./cardRepository";
+import { PanelRepository } from "./panelRepository";
+
 export class TaskboardRepository {
+	private readonly panelRepository = new PanelRepository();
+	private readonly cardRepository = new CardRepository();
+
 	public async createTaskboard(
 		userId: string,
 		taskboardInput: TaskboardAttributes
@@ -114,6 +120,16 @@ export class TaskboardRepository {
 		} catch (error) {
 			return false;
 		}
+
+		const panels = await this.panelRepository.getPanelsForTaskboard(
+			taskboardId
+		);
+		const cardDeletePromises: Promise<number>[] = [];
+		for (let p of panels) {
+			cardDeletePromises.push(this.cardRepository.deleteCardsInPanel(p.id));
+		}
+		await Promise.all(cardDeletePromises);
+		await this.panelRepository.deletePanelsInTaskboard(taskboardId);
 
 		const rows = await Taskboard.destroy({
 			where: {

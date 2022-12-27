@@ -14,4 +14,12 @@ export class CardRepository {
 		const cardResult = await Card.findByPk(cardId);
 		return cardResult?.dataValues ?? null;
 	}
+
+	async deleteCardsInPanel(panelId: string): Promise<number> {
+		return await Card.destroy({
+			where: {
+				panel_id: panelId,
+			},
+		});
+	}
 }

@@ -57,4 +57,10 @@ export class PanelRepository {
 			return null;
 		}
 	}
+
+	async deletePanelsInTaskboard(taskboardId: string): Promise<number> {
+		return await Panel.destroy({
+			where: { taskboard_id: taskboardId },
+		});
+	}
 }
