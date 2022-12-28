@@ -49,7 +49,9 @@ export class TaskboardService {
 		const members = await this.taskboardRepository.getTaskBoardMembers(
 			taskboardId
 		);
+
 		if (members.length <= 1) {
+			await this.taskboardRepository.leaveTaskboard(taskboardId, userId);
 			return await this.taskboardRepository.deleteTaskboard(taskboardId);
 		} else if (taskboard.owner_id === userId) {
 			try {
@@ -66,7 +68,7 @@ export class TaskboardService {
 			}
 		}
 
-		return await this.leaveTaskboard(taskboardId, userId);
+		return await this.taskboardRepository.leaveTaskboard(taskboardId, userId);
 	}
 
 	public async isMember(userId: string, taskboardId: string): Promise<boolean> {
@@ -145,22 +147,26 @@ export class TaskboardService {
 		const serviceResponse = this.baseRes<string>();
 		const taskboard = await this.taskboardRepository.getTaskboardByUri(uri);
 		if (!taskboard) {
+			const str = "Taskboard not found";
 			serviceResponse.ok = false;
-			serviceResponse.errors.push("Taskboard not found");
+			serviceResponse.errors.push(str);
+			console.error(str);
 			return serviceResponse;
 		}
 
 		if (!userId) {
+			const str = "Only owner can delete taskboard and no owner was supplied";
 			serviceResponse.ok = false;
-			serviceResponse.errors.push(
-				"Only owner can delete taskboard and no owner was supplied"
-			);
+			serviceResponse.errors.push(str);
+			console.error(str);
 			return serviceResponse;
 		}
 
 		if (taskboard.owner_id !== userId) {
+			const str = "Only owner can delete taskboard";
 			serviceResponse.ok = false;
-			serviceResponse.errors.push("Only owner can delete taskboard");
+			serviceResponse.errors.push(str);
+			console.error(str);
 			return serviceResponse;
 		}
 

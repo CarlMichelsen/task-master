@@ -22,6 +22,7 @@ export class AdministrationService {
 		if (!account) throw new Error("Account does not exist");
 
 		const taskboards = await this.taskboardService.getUserTaskboards(userId);
+
 		for (let taskboard of taskboards) {
 			const left = await this.taskboardService.leaveTaskboard(
 				taskboard.id,
