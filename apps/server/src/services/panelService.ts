@@ -29,6 +29,13 @@ export class PanelService {
 		return await this.repository.createPanelForTaskboard(panel);
 	}
 
+	public async deletePanel(panelId: string): Promise<PanelAttributes | null> {
+		const panel = await this.repository.getPanelById(panelId);
+		if (!panel) return null;
+		const rows = await this.repository.deletePanel(panel.id);
+		return rows > 0 ? panel : null;
+	}
+
 	public async getPanelsForTaskboard(
 		taskboardId: string
 	): Promise<PanelAttributes[]> {

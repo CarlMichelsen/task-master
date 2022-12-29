@@ -18,6 +18,10 @@
   -webkit-text-size-adjust: 100%;
 }
 
+input {
+  @apply bg-neutral-700;
+}
+
 .panel-height {
   height: 48rem;
 }

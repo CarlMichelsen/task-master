@@ -57,7 +57,7 @@
 		});
 	};
 
-	const onNewTaskboardPanel = (panel: ClientPanel) => {
+	const onCreateTaskboardPanel = (panel: ClientPanel) => {
 		if (!$TaskboardStore) return;
 		const allPanels = $TaskboardStore.panels;
 		TaskboardStore.set({
@@ -68,12 +68,24 @@
 		});
 	};
 
+	const onDeleteTaskboardPanel = (panel: ClientPanel) => {
+		if (!$TaskboardStore) return;
+		const allPanels = $TaskboardStore.panels;
+		TaskboardStore.set({
+			...$TaskboardStore,
+			panels: allPanels
+				.filter((p) => p.id !== panel.id)
+				.sort((p1, p2) => p1.sortOrder - p2.sortOrder),
+		});
+	};
+
 	const connectWebsocket = (jwt: string, uri: string) => {
 		WebsocketService.connect(jwt, uri);
 		WebsocketService.onUpdateConnected = onForceUpdateConnected;
 		WebsocketService.onConnectedJoin = onConnectedJoin;
 		WebsocketService.onConnectedLeave = onConnectedLeave;
-		WebsocketService.onNewTaskboardPanel = onNewTaskboardPanel;
+		WebsocketService.onCreateTaskboardPanel = onCreateTaskboardPanel;
+		WebsocketService.onDeleteTaskboardPanel = onDeleteTaskboardPanel;
 	};
 
 	const disconnectWebsocket = () => {

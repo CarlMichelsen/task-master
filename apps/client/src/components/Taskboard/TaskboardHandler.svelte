@@ -8,7 +8,14 @@
 		const title = prompt("Panel title");
 		if (!title) return;
 
-		WebsocketService.createTaskboardPanel(title, 1);
+		WebsocketService.createTaskboardPanel(
+			title,
+			($TaskboardStore?.panels.length ?? 1) * 1000 * 1000
+		);
+	};
+
+	const deleteEvent = (event: CustomEvent<string>) => {
+		WebsocketService.deleteTaskboardPanel(event.detail as string);
 	};
 </script>
 
@@ -17,7 +24,7 @@
 		<button on:click={createPanelButton}>CreatePanel</button>
 		<div class="grid grid-cols-3 space-x-3">
 			{#each $TaskboardStore.panels as panel}
-				<Panel {panel} />
+				<Panel {panel} on:delete={deleteEvent} />
 			{/each}
 		</div>
 	{/if}

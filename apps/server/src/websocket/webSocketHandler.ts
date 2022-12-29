@@ -8,7 +8,6 @@ import { IServerToClientEvents } from "data-transfer-interfaces/websocket/server
 import { ISocketData } from "./eventInterfaces/ISocketData";
 
 import { AuthService } from "../services/authService";
-import { TaskboardRepository } from "../repositories/taskboardRepository";
 import { TaskboardLobby } from "./taskboardLobby";
 import { getUser, joinTaskboard } from "./validate";
 import {
@@ -21,7 +20,6 @@ import { mapToClientPanel } from "../mappers/clientPanelMapper";
 
 export class WebSocketHandler {
 	lobbies: Map<string, TaskboardLobby>;
-	taskboardRepository: TaskboardRepository;
 	io: io.Server<
 		IClientToServerEvents,
 		IServerToClientEvents,
@@ -31,7 +29,6 @@ export class WebSocketHandler {
 
 	constructor(httpServer: http.Server, cors?: cors.CorsOptions) {
 		this.lobbies = new Map<string, TaskboardLobby>();
-		this.taskboardRepository = new TaskboardRepository();
 		this.io = new io.Server(httpServer, {
 			path: "/socket",
 			cors,
@@ -78,17 +75,29 @@ export class WebSocketHandler {
 			socket.on(
 				"createTaskboardPanel",
 				async (title: string, sortOrder: number) => {
-					const panel: PanelAttributes | null =
+					const panel =
 						(await lobby?.createTaskboardPanel(title, sortOrder)) ?? null;
 					if (!panel) return;
 					this.io
 						.to(uri)
 						.emit(
-							"newTaskboardPanel",
+							"createTaskboardPanel",
 							await mapToClientPanel(panel, lobby?.taskboard)
 						);
 				}
 			);
+
+			socket.on("deleteTaskboardPanel", async (panelId) => {
+				const deletedPanel =
+					(await lobby?.deleteTaskboardPanel(panelId)) ?? null;
+				if (!deletedPanel) return;
+				this.io
+					.to(uri)
+					.emit(
+						"deleteTaskboardPanel",
+						await mapToClientPanel(deletedPanel, lobby?.taskboard)
+					);
+			});
 
 			socket.on("disconnect", () => {
 				console.log(`disconnected ${user.username}`);

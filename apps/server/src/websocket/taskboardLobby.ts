@@ -42,6 +42,10 @@ export class TaskboardLobby {
 		return await this.panelService.createPanelForTaskboard(newPanel);
 	}
 
+	async deleteTaskboardPanel(panelId: string): Promise<PanelAttributes | null> {
+		return await this.panelService.deletePanel(panelId);
+	}
+
 	isEmpty(): boolean {
 		return this.connected.length === 0;
 	}
