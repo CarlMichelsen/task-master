@@ -7,14 +7,16 @@ import {
 	mapToClientTaskboard,
 	taskboardFactory,
 } from "../mappers/clientTaskboardMapper";
-import { TaskboardValidationService } from "./taskboardValidationService";
+import { TaskboardValidationService } from "../validators/taskboardValidationService";
 
 import { UserRepository } from "../repositories/userRepository";
 import { TaskboardRepository } from "../repositories/taskboardRepository";
+import { PanelService } from "./panelService";
 
 export class TaskboardService {
 	private readonly taskboardRepository = new TaskboardRepository();
 	private readonly userRepository = new UserRepository();
+	private readonly panelService = new PanelService();
 	private readonly validator = new TaskboardValidationService();
 
 	public async joinTaskboard(
@@ -40,26 +42,27 @@ export class TaskboardService {
 	}
 
 	public async leaveTaskboard(
-		taskboardId: string,
+		taskboard: TaskboardAttributes,
 		userId: string
 	): Promise<boolean> {
-		const taskboard = await this.taskboardRepository.getTaskboard(taskboardId);
-		if (!taskboard) return false;
-
 		const members = await this.taskboardRepository.getTaskBoardMembers(
-			taskboardId
+			taskboard.id
 		);
 
 		if (members.length <= 1) {
-			await this.taskboardRepository.leaveTaskboard(taskboardId, userId);
-			return await this.taskboardRepository.deleteTaskboard(taskboardId);
+			const left = await this.taskboardRepository.leaveTaskboard(
+				taskboard.id,
+				userId
+			);
+			const deleted = await this.deleteTaskboard(taskboard.id);
+			return left && deleted;
 		} else if (taskboard.owner_id === userId) {
 			try {
 				const candidates = members.filter((m) => m.id !== userId);
 				const candidate =
 					candidates[Math.floor(Math.random() * candidates.length)];
 				const newOwner = await this.taskboardRepository.setNewTaskboardOwner(
-					taskboardId,
+					taskboard.id,
 					candidate.id
 				);
 				if (!newOwner) throw new Error("Failed to set new owner");
@@ -68,7 +71,7 @@ export class TaskboardService {
 			}
 		}
 
-		return await this.taskboardRepository.leaveTaskboard(taskboardId, userId);
+		return await this.taskboardRepository.leaveTaskboard(taskboard.id, userId);
 	}
 
 	public async isMember(userId: string, taskboardId: string): Promise<boolean> {
@@ -96,13 +99,10 @@ export class TaskboardService {
 		return await this.taskboardRepository.getTaskboardByUri(uri);
 	}
 
-	public async deleteTaskboard(
-		taskboardId: string,
-		userId: string
-	): Promise<boolean> {
+	public async deleteTaskboard(taskboardId: string): Promise<boolean> {
 		const taskboard = await this.taskboardRepository.getTaskboard(taskboardId);
 		if (!taskboard) return false;
-		if (taskboard.owner_id !== userId) return false;
+		await this.panelService.deletePanelsInTaskboard(taskboard.id);
 		return await this.taskboardRepository.deleteTaskboard(taskboardId);
 	}
 
@@ -170,9 +170,7 @@ export class TaskboardService {
 			return serviceResponse;
 		}
 
-		const deleted = await this.taskboardRepository.deleteTaskboard(
-			taskboard.id
-		);
+		const deleted = await this.deleteTaskboard(taskboard.id);
 
 		serviceResponse.ok = deleted;
 		serviceResponse.data = serviceResponse.ok ? taskboard.uri : undefined;

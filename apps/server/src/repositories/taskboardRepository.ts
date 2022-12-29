@@ -1,27 +1,23 @@
-import { Taskboard, TaskboardAttributes } from "../database/models/taskboard";
+import {
+	Taskboard,
+	TaskboardAttributes,
+	TaskboardCreationAttributes,
+} from "../database/models/taskboard";
 import { User, UserAttributes } from "../database/models/user";
 import { UserTaskboard } from "../database/models/userTaskboard";
 
-import { CardRepository } from "./cardRepository";
-import { PanelRepository } from "./panelRepository";
-
 export class TaskboardRepository {
-	private readonly panelRepository = new PanelRepository();
-	private readonly cardRepository = new CardRepository();
-
 	public async createTaskboard(
 		userId: string,
-		taskboardInput: TaskboardAttributes
+		taskboardInput: TaskboardCreationAttributes
 	): Promise<TaskboardAttributes | null> {
-		const user = await User.findByPk(userId);
-		if (!user) return null;
 		try {
 			const taskboard = await Taskboard.create({
 				...taskboardInput,
-				owner_id: user.dataValues.id,
+				owner_id: userId,
 			});
 			await UserTaskboard.create({
-				user_id: user.dataValues.id,
+				user_id: userId,
 				taskboard_id: taskboard.dataValues.id,
 			});
 			return taskboard.dataValues;
@@ -67,16 +63,13 @@ export class TaskboardRepository {
 		taskboardId: string,
 		userId: string
 	): Promise<TaskboardAttributes | null> {
-		const user = await User.findByPk(userId);
-		if (!user) return null;
-
 		const taskboard = await Taskboard.findByPk(taskboardId);
 		if (!taskboard?.dataValues) return null;
 
 		try {
 			await UserTaskboard.create({
 				taskboard_id: taskboard.dataValues.id,
-				user_id: user.dataValues.id,
+				user_id: userId,
 			});
 			return taskboard.dataValues ?? null;
 		} catch (error: any) {
@@ -91,12 +84,6 @@ export class TaskboardRepository {
 		taskboardId: string,
 		userId: string
 	): Promise<boolean> {
-		const user = await User.findByPk(userId);
-		if (!user) return false;
-
-		const taskboard = await Taskboard.findByPk(taskboardId);
-		if (!taskboard) return false;
-
 		const rows = await UserTaskboard.destroy({
 			where: {
 				taskboard_id: taskboardId,
@@ -108,9 +95,6 @@ export class TaskboardRepository {
 	}
 
 	public async deleteTaskboard(taskboardId: string): Promise<boolean> {
-		const taskboard = await Taskboard.findByPk(taskboardId);
-		if (!taskboard) return false;
-
 		try {
 			await UserTaskboard.destroy({
 				where: {
@@ -120,16 +104,6 @@ export class TaskboardRepository {
 		} catch (error) {
 			return false;
 		}
-
-		const panels = await this.panelRepository.getPanelsForTaskboard(
-			taskboardId
-		);
-		const cardDeletePromises: Promise<number>[] = [];
-		for (let p of panels) {
-			cardDeletePromises.push(this.cardRepository.deleteCardsInPanel(p.id));
-		}
-		await Promise.all(cardDeletePromises);
-		await this.panelRepository.deletePanelsInTaskboard(taskboardId);
 
 		const rows = await Taskboard.destroy({
 			where: {
@@ -181,9 +155,6 @@ export class TaskboardRepository {
 		taskboardId: string,
 		newOwnerUserId: string
 	): Promise<boolean> {
-		const taskboard = await Taskboard.findByPk(taskboardId);
-		if (!taskboard) return false;
-
 		const members = await this.getTaskBoardMembers(taskboardId);
 		if (!members.find((m) => m.id === newOwnerUserId)) return false;
 

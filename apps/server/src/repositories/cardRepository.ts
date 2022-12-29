@@ -22,4 +22,12 @@ export class CardRepository {
 			},
 		});
 	}
+
+	async deleteCardsInMultiplePanels(panelIds: string[]): Promise<number> {
+		return await Card.destroy({
+			where: {
+				panel_id: panelIds,
+			},
+		});
+	}
 }

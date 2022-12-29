@@ -1,16 +1,17 @@
 import { PanelAttributes } from "../database/models/panel";
 import { TaskboardAttributes } from "../database/models/taskboard";
 import { UserAttributes } from "../database/models/user";
-import { PanelRepository } from "../repositories/panelRepository";
+
+import { PanelService } from "../services/panelService";
 
 export class TaskboardLobby {
 	taskboard: TaskboardAttributes;
 	connected: UserAttributes[] = [];
-	panelRepository: PanelRepository;
+	panelService: PanelService;
 
 	constructor(taskboard: TaskboardAttributes) {
 		this.taskboard = taskboard;
-		this.panelRepository = new PanelRepository();
+		this.panelService = new PanelService();
 		console.log(
 			"lobby for taskboard",
 			`"${taskboard.taskboard_name}"`,
@@ -33,12 +34,12 @@ export class TaskboardLobby {
 		title: string,
 		sortOrder: number
 	): Promise<PanelAttributes | null> {
-		const newPanel = this.panelRepository.panelFactory(
+		const newPanel = this.panelService.panelFactory(
 			title,
 			sortOrder,
 			this.taskboard.id
 		);
-		return await this.panelRepository.createPanelForTaskboard(newPanel);
+		return await this.panelService.createPanelForTaskboard(newPanel);
 	}
 
 	isEmpty(): boolean {

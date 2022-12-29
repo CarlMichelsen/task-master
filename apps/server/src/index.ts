@@ -48,4 +48,4 @@ syncDb(async () => {
 		websocket.start();
 		startup.setDate(Date.now());
 	});
-}, !Configuration.production); // skip database table sync in dev mode
+}, Configuration.production); // skip database table sync in dev mode

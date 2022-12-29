@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import {
 	Panel,
 	PanelAttributes,
@@ -31,19 +30,6 @@ export class PanelRepository {
 			throw new Error(`Could not find taskboard for uri <${taskboardUri}>`);
 
 		return await this.getPanelsForTaskboard(taskboard.id);
-	}
-
-	panelFactory(
-		title: string,
-		sortOrder: number,
-		taskboardId: string
-	): PanelAttributes {
-		return {
-			id: crypto.randomUUID(),
-			taskboard_id: taskboardId,
-			title: title,
-			sort_order: sortOrder,
-		};
 	}
 
 	async createPanelForTaskboard(

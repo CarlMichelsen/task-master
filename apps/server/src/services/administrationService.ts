@@ -25,7 +25,7 @@ export class AdministrationService {
 
 		for (let taskboard of taskboards) {
 			const left = await this.taskboardService.leaveTaskboard(
-				taskboard.id,
+				taskboard,
 				userId
 			);
 			if (!left) {

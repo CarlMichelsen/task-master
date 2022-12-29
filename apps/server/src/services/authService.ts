@@ -4,7 +4,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import {
 	AuthValidationService,
 	ValidationResult,
-} from "./authValidationService";
+} from "../validators/authValidationService";
 import { AccountRepository } from "../repositories/accountRepository";
 import { UserRepository } from "../repositories/userRepository";
 import { AdministrationService } from "./administrationService";
