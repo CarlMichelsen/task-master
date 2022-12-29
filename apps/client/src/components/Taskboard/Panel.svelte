@@ -27,8 +27,8 @@
 					on:click={() => movePanel(-1)}>←</button
 				>
 				<button
-					class="flex-1 mx-6 px-2 hover:text-white hover:bg-red-600"
-					on:click={deletePanel}>DELETE THIS PANEL</button
+					class="flex-1 mx-1 px-2 hover:text-white hover:bg-red-600"
+					on:click={deletePanel}>X</button
 				>
 				<button
 					class="flex-none hover:bg-neutral-500 px-2"
@@ -38,4 +38,7 @@
 		</div>
 	</div>
 	<hr />
+	<div class="p-1 shadow-inner">
+		<p>---CARD PLACEHOLDER---</p>
+	</div>
 </div>
