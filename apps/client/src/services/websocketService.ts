@@ -21,6 +21,7 @@ export class WebsocketService {
 
 	static onCreateTaskboardPanel: ((panel: ClientPanel) => void) | null = null;
 	static onDeleteTaskboardPanel: ((panel: ClientPanel) => void) | null = null;
+	static onMoveTaskboardPanel: ((panel: ClientPanel) => void) | null = null;
 
 	static createTaskboardPanel(title: string, sortOrder: number) {
 		if (!this.ready) throw new Error("No active websocket connection!");
@@ -30,6 +31,11 @@ export class WebsocketService {
 	static deleteTaskboardPanel(panelId: string) {
 		if (!this.ready) throw new Error("No active websocket connection!");
 		this.socket?.emit("deleteTaskboardPanel", panelId);
+	}
+
+	static moveTaskboardPanel(panelId: string, sortOrder: number) {
+		if (!this.ready) throw new Error("No active websocket connection!");
+		this.socket?.emit("moveTaskboardPanel", panelId, sortOrder);
 	}
 
 	static connect(jwt: string, taskboardUri: string) {
@@ -56,6 +62,11 @@ export class WebsocketService {
 		this.socket.on("deleteTaskboardPanel", (panel) => {
 			console.log("deleteTaskboardPanel", panel);
 			this.onDeleteTaskboardPanel && this.onDeleteTaskboardPanel(panel);
+		});
+
+		this.socket.on("moveTaskboardPanel", (panel) => {
+			console.log("moveTaskboardPanel", panel);
+			this.onMoveTaskboardPanel && this.onMoveTaskboardPanel(panel);
 		});
 
 		this.socket.on("updateConnected", (connected) => {

@@ -57,7 +57,7 @@
 		});
 	};
 
-	const onCreateTaskboardPanel = (panel: ClientPanel) => {
+	const onUpdateTaskboardPanel = (panel: ClientPanel) => {
 		if (!$TaskboardStore) return;
 		const allPanels = $TaskboardStore.panels;
 		TaskboardStore.set({
@@ -84,7 +84,8 @@
 		WebsocketService.onUpdateConnected = onForceUpdateConnected;
 		WebsocketService.onConnectedJoin = onConnectedJoin;
 		WebsocketService.onConnectedLeave = onConnectedLeave;
-		WebsocketService.onCreateTaskboardPanel = onCreateTaskboardPanel;
+		WebsocketService.onCreateTaskboardPanel = onUpdateTaskboardPanel;
+		WebsocketService.onMoveTaskboardPanel = onUpdateTaskboardPanel;
 		WebsocketService.onDeleteTaskboardPanel = onDeleteTaskboardPanel;
 	};
 

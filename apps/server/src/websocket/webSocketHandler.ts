@@ -87,6 +87,18 @@ export class WebSocketHandler {
 				}
 			);
 
+			socket.on("moveTaskboardPanel", async (panelId, sortOrder) => {
+				const deletedPanel =
+					(await lobby?.moveTaskboardPanel(panelId, sortOrder)) ?? null;
+				if (!deletedPanel) return;
+				this.io
+					.to(uri)
+					.emit(
+						"moveTaskboardPanel",
+						await mapToClientPanel(deletedPanel, lobby?.taskboard)
+					);
+			});
+
 			socket.on("deleteTaskboardPanel", async (panelId) => {
 				const deletedPanel =
 					(await lobby?.deleteTaskboardPanel(panelId)) ?? null;

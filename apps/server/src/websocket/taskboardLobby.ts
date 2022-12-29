@@ -46,6 +46,13 @@ export class TaskboardLobby {
 		return await this.panelService.deletePanel(panelId);
 	}
 
+	async moveTaskboardPanel(
+		panelId: string,
+		sortOrder: number
+	): Promise<PanelAttributes | null> {
+		return await this.panelService.moveTaskboardPanel(panelId, sortOrder);
+	}
+
 	isEmpty(): boolean {
 		return this.connected.length === 0;
 	}

@@ -36,6 +36,13 @@ export class PanelService {
 		return rows > 0 ? panel : null;
 	}
 
+	public async moveTaskboardPanel(
+		taskboardId: string,
+		sortOrder: number
+	): Promise<PanelAttributes | null> {
+		return await this.repository.movePanel(taskboardId, sortOrder);
+	}
+
 	public async getPanelsForTaskboard(
 		taskboardId: string
 	): Promise<PanelAttributes[]> {

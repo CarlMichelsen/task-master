@@ -7,5 +7,5 @@ export interface IServerToClientEvents {
 	onConnectedLeave: (connected: ClientUser) => void;
 	createTaskboardPanel: (panel: ClientPanel) => void;
 	deleteTaskboardPanel: (panel: ClientPanel) => void;
-	withAck: (d: string, callback: (e: number) => void) => void;
+	moveTaskboardPanel: (panel: ClientPanel) => void;
 }

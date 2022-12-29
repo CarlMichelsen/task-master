@@ -44,6 +44,26 @@ export class PanelRepository {
 		}
 	}
 
+	async movePanel(
+		panelId: string,
+		sortOrder: number
+	): Promise<PanelAttributes | null> {
+		try {
+			const rows = await Panel.update(
+				{
+					sort_order: sortOrder,
+				},
+				{
+					where: { id: panelId },
+				}
+			);
+			return rows[0] === 1 ? await this.getPanelById(panelId) : null;
+		} catch (error) {
+			console.log(error);
+			return null;
+		}
+	}
+
 	async deletePanel(panelId: string): Promise<number> {
 		return await Panel.destroy({
 			where: { id: panelId },
