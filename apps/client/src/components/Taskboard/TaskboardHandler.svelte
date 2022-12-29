@@ -25,7 +25,7 @@
 		const { id, direction } = event.detail;
 		const panels = $TaskboardStore?.panels ?? [];
 		const order = getAdjacentPanelSortOrder(id, direction, panels);
-		if (!isNaN(order)) WebsocketService.moveTaskboardPanel(id, order);
+		if (order) WebsocketService.moveTaskboardPanel(id, order);
 	};
 </script>
 
