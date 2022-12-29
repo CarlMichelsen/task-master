@@ -17,11 +17,24 @@
 
 <div class="bg-neutral-400 panel-height text-black">
 	<div class="p-1">
-		<p class="text-lg font-bold">{panel.title}</p>
 		<div class="flex">
-			<button class="flex-none" on:click={() => movePanel(-1)}>←</button>
-			<button class="flex-1" on:click={deletePanel}>DELETE THIS PANEL</button>
-			<button class="flex-none" on:click={() => movePanel(1)}>→</button>
+			<div class="flex-1">
+				<p class="text-lg font-bold">{panel.title}</p>
+			</div>
+			<div class="flex flex-none">
+				<button
+					class="flex-none hover:bg-neutral-500 px-2"
+					on:click={() => movePanel(-1)}>←</button
+				>
+				<button
+					class="flex-1 mx-6 px-2 hover:text-white hover:bg-red-600"
+					on:click={deletePanel}>DELETE THIS PANEL</button
+				>
+				<button
+					class="flex-none hover:bg-neutral-500 px-2"
+					on:click={() => movePanel(1)}>→</button
+				>
+			</div>
 		</div>
 	</div>
 	<hr />

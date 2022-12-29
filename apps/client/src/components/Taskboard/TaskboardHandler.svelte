@@ -23,6 +23,7 @@
 	) => {
 		const { id, direction } = event.detail;
 		const panels = $TaskboardStore?.panels ?? [];
+		if (panels.length <= 1) return;
 		const panelToMoveId = panels.findIndex((p) => p.id === id);
 		if (panelToMoveId === -1) return;
 
