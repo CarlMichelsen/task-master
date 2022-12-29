@@ -8,8 +8,8 @@ export const getAdjacentPanelSortOrder = (
 	if (panels.length <= 1) NaN;
 	const panelToMoveId = panels.findIndex((p) => p.id === panelId);
 	if (panelToMoveId === -1) return NaN;
-	if (panelToMoveId === 0) return NaN;
-	if (panelToMoveId === panels.length) return NaN;
+	if (panelToMoveId === 0 && direction === -1) return NaN;
+	if (panelToMoveId === panels.length - 1 && direction === 1) return NaN;
 
 	const nextPanel = panels[panelToMoveId + direction];
 	let newOrder = nextPanel.sortOrder + 500 * direction;
