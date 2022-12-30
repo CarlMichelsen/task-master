@@ -60,6 +60,13 @@
 							: ""}
 					</p>
 				</div>
+
+				<div class="absolute top-2 right-2 z-20 pointer-events-none">
+					<p class="text-xs text-neutral-400">
+						{taskboard.members.length}
+						member{taskboard.members.length > 1 ? "s" : ""}
+					</p>
+				</div>
 			</div>
 
 			<div
