@@ -57,14 +57,15 @@
 		});
 	};
 
-	const onUpdateTaskboardPanel = (panel: ClientPanel) => {
+	const onUpdateTaskboardPanel = (panel?: ClientPanel) => {
 		if (!$TaskboardStore) return;
 		const allPanels = $TaskboardStore.panels;
 		TaskboardStore.set({
 			...$TaskboardStore,
-			panels: mergeClientPanelLists(allPanels, [panel]).sort(
-				(p1, p2) => p1.sortOrder - p2.sortOrder
-			),
+			panels: (panel
+				? mergeClientPanelLists(allPanels, [panel])
+				: allPanels
+			).sort((p1, p2) => p1.sortOrder - p2.sortOrder),
 		});
 	};
 
@@ -102,7 +103,9 @@
 				const nextTaskboard = res.data ?? null;
 				if (!nextTaskboard || !$ClientDataStore?.jwt)
 					throw new Error("Invalid taskboard");
+
 				TaskboardStore.set(nextTaskboard);
+				onUpdateTaskboardPanel();
 				connectWebsocket($ClientDataStore.jwt, nextTaskboard.uri); // connect
 			} else {
 				disconnectWebsocket(); // disconnect

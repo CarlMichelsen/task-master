@@ -15,6 +15,18 @@
 		WebsocketService.createTaskboardPanel(title, order);
 	};
 
+	const createNewCard = (
+		event: CustomEvent<{ title: string; panelId: string }>
+	) => {
+		console.log(event.detail);
+	};
+
+	const moveCard = (
+		event: CustomEvent<{ cardId: string; panelId: string }>
+	) => {
+		console.log(event.detail);
+	};
+
 	const deletePanelEvent = (event: CustomEvent<string>) => {
 		WebsocketService.deleteTaskboardPanel(event.detail as string);
 	};
@@ -32,9 +44,16 @@
 <div>
 	{#if $TaskboardStore}
 		<button on:click={createPanelButton}>CreatePanel</button>
-		<div class="grid grid-cols-3 space-x-3">
-			{#each $TaskboardStore.panels as panel}
-				<Panel {panel} on:delete={deletePanelEvent} on:move={movePanelEvent} />
+		<div class="overflow-x-scroll flex flex-nowrap">
+			{#each $TaskboardStore.panels as panel, id}
+				<Panel
+					{panel}
+					on:newCard={createNewCard}
+					on:delete={deletePanelEvent}
+					on:move={movePanelEvent}
+					isFirst={id === 0}
+					isLast={id === $TaskboardStore.panels.length - 1}
+				/>
 			{/each}
 		</div>
 	{/if}

@@ -65,4 +65,8 @@ button {
   transform: translate(-50%, -100%);
 }
 
+.panel-width {
+  width: 48rem;
+}
+
 @tailwind utilities;
