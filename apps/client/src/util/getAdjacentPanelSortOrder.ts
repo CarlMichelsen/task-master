@@ -12,7 +12,7 @@ export const getAdjacentPanelSortOrder = (
 	if (panelToMoveId === panels.length - 1 && direction === 1) return null;
 
 	const nextPanel = panels[panelToMoveId + direction];
-	let newOrder = nextPanel.sortOrder + 500 * direction;
+	let newOrder = nextPanel.sortOrder + 1000 * direction;
 
 	const nextPanelAgain = panels[panelToMoveId + direction * 2];
 	if (nextPanelAgain) {
@@ -20,6 +20,5 @@ export const getAdjacentPanelSortOrder = (
 		const absDiff = Math.abs(nextPanelAgain.sortOrder - nextPanel.sortOrder);
 		newOrder = nextSortOrder + (absDiff * direction) / 2; // halfway to next
 	}
-	if (isNaN(newOrder) || !isFinite(newOrder)) return null;
 	return newOrder;
 };

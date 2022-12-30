@@ -82,7 +82,7 @@
 					on:click={toggleLoginMenu}>Login</button
 				>
 			{:else}
-				<div class="float-right w-full h-full h-16 sm:w-96">
+				<div class="float-right w-full h-full sm:w-96">
 					<TopRightUserBox on:click={toggleLoginMenu} toggled={loginMenu} />
 				</div>
 			{/if}

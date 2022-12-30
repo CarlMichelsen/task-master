@@ -42,6 +42,8 @@
 	};
 
 	const submit = async () => {
+		if (password1 !== password2) return;
+
 		const errors = Object.values(usernameValidationResult)
 			.concat(Object.values(emailValidationResult))
 			.concat(Object.values(fullnameValidationResult))

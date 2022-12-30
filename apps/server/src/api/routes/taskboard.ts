@@ -3,6 +3,7 @@ import { Router, Request, Response } from "express";
 // models
 import { ServiceResponse } from "data-transfer-interfaces/serviceResponse";
 import { ClientTaskboard } from "data-transfer-interfaces/taskboard/clientTaskboard";
+import { CreateTaskboardRequest } from "data-transfer-interfaces/taskboard/createTaskboardRequest";
 
 // middleware
 import { authMiddleware } from "../middleware/authMiddleware";
@@ -15,7 +16,6 @@ import {
 	mapManyToClientTaskboards,
 	mapToClientTaskboard,
 } from "../../mappers/clientTaskboardMapper";
-import { CreateTaskboardRequest } from "data-transfer-interfaces/taskboard/createTaskboardRequest";
 
 const taskboardRouter = Router();
 

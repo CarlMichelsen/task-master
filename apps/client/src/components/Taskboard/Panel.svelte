@@ -1,8 +1,17 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
 	import type { ClientPanel } from "data-transfer-interfaces/panel/clientPanel";
+	import type { ClientCard } from "data-transfer-interfaces/card/clientCard";
+	import Card from "./Card.svelte";
 
 	export let panel: ClientPanel;
+
+	let placeholderCard: ClientCard = {
+		id: "placeholder-id",
+		title: "Placeholder",
+		panel,
+		owner: null,
+	};
 
 	const dispatch = createEventDispatcher();
 
@@ -15,7 +24,10 @@
 	};
 </script>
 
-<div class="bg-neutral-400 panel-height text-black">
+<div
+	class="bg-neutral-200 panel-height text-black shadow-inner-2xl"
+	id={`panel-${panel.id}`}
+>
 	<div class="p-1">
 		<div class="flex">
 			<div class="flex-1">
@@ -37,8 +49,11 @@
 			</div>
 		</div>
 	</div>
-	<hr />
-	<div class="p-1 shadow-inner">
-		<p>---CARD PLACEHOLDER---</p>
+	<div class="grid grid-cols-1 lg:grid-cols-2">
+		<Card card={placeholderCard} />
+		<Card card={placeholderCard} />
+		<Card card={placeholderCard} />
+		<Card card={placeholderCard} />
+		<Card card={placeholderCard} />
 	</div>
 </div>
