@@ -5,25 +5,22 @@
 	import NewCard from "./Card/NewCard.svelte";
 
 	import type { ClientPanel } from "data-transfer-interfaces/panel/clientPanel";
-	import type { ClientCard } from "data-transfer-interfaces/card/clientCard";
 
 	export let panel: ClientPanel;
 	export let isFirst: boolean;
 	export let isLast: boolean;
-
-	let placeholderCard: ClientCard = {
-		id: "placeholder-id",
-		title: "Placeholder",
-		panel,
-		owner: null,
-	};
 
 	const dispatch = createEventDispatcher();
 
 	const createCard = () => {
 		const title = prompt("Title");
 		if (!title) return;
-		dispatch("newCard", { title, panelId: panel.id });
+		dispatch("newCard", { panelId: panel.id, title });
+	};
+
+	const deleteCard = (event: CustomEvent<string>) => {
+		console.log("CARD", event.detail);
+		dispatch("deleteCard", event.detail);
 	};
 
 	const deletePanel = () => {
@@ -36,7 +33,7 @@
 </script>
 
 <div
-	class="bg-neutral-200 panel-height text-black shadow-inner-2xl w-52 lg:w-96 flex-none mx-2"
+	class="bg-neutral-200 panel-height text-black shadow-inner-2xl w-64 lg:w-[32rem] flex-none mx-2"
 	id={`panel-${panel.id}`}
 >
 	<div class="p-1">
@@ -74,9 +71,8 @@
 	</div>
 	<div class="grid grid-cols-1 lg:grid-cols-2">
 		<NewCard on:createCard={createCard} />
-		<Card card={placeholderCard} />
-		<Card card={placeholderCard} />
-		<Card card={placeholderCard} />
-		<Card card={placeholderCard} />
+		{#each panel.cards as card}
+			<Card {card} on:deleteCard={deleteCard} />
+		{/each}
 	</div>
 </div>

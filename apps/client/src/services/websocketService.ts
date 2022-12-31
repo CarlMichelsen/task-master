@@ -1,9 +1,10 @@
 import { io, Socket } from "socket.io-client";
+import { host } from "../util/host";
 import type { IServerToClientEvents } from "data-transfer-interfaces/websocket/serverToClientEvents";
 import type { IClientToServerEvents } from "data-transfer-interfaces/websocket/clientToServerEvents";
-import { host } from "../util/host";
 import type { ClientUser } from "data-transfer-interfaces/user/clientUser";
 import type { ClientPanel } from "data-transfer-interfaces/panel/clientPanel";
+import type { ClientCard } from "data-transfer-interfaces/card/clientCard";
 
 export class WebsocketService {
 	private static socket: Socket<
@@ -14,14 +15,20 @@ export class WebsocketService {
 
 	static onConnect: (() => void) | null = null;
 	static onDisconnect: (() => void) | null = null;
-	static onUpdateConnected: ((connectedList: ClientUser[]) => void) | null =
-		null;
-	static onConnectedJoin: ((connectedList: ClientUser) => void) | null = null;
-	static onConnectedLeave: ((connectedList: ClientUser) => void) | null = null;
+
+	static onUpdateConnected: ((connected: ClientUser[]) => void) | null = null;
+	static onConnectedJoin: ((connected: ClientUser) => void) | null = null;
+	static onConnectedLeave: ((connected: ClientUser) => void) | null = null;
 
 	static onCreateTaskboardPanel: ((panel: ClientPanel) => void) | null = null;
 	static onDeleteTaskboardPanel: ((panel: ClientPanel) => void) | null = null;
 	static onMoveTaskboardPanel: ((panel: ClientPanel) => void) | null = null;
+
+	static onCreateCard: ((card: ClientCard) => void) | null = null;
+	static onMoveCard:
+		| ((card: ClientCard, from: string, to: string) => void)
+		| null = null;
+	static onDeleteCard: ((card: ClientCard) => void) | null = null;
 
 	static createTaskboardPanel(title: string, sortOrder: number) {
 		if (!this.ready) throw new Error("No active websocket connection!");
@@ -36,6 +43,21 @@ export class WebsocketService {
 	static moveTaskboardPanel(panelId: string, sortOrder: number) {
 		if (!this.ready) throw new Error("No active websocket connection!");
 		this.socket?.emit("moveTaskboardPanel", panelId, sortOrder);
+	}
+
+	static createCard(panelId: string, title: string) {
+		if (!this.ready) throw new Error("No active websocket connection!");
+		this.socket?.emit("createCard", panelId, title);
+	}
+
+	static moveCard(cardId: string, fromPaneld: string, toPaneld: string) {
+		if (!this.ready) throw new Error("No active websocket connection!");
+		this.socket?.emit("moveCard", cardId, fromPaneld, toPaneld);
+	}
+
+	static deleteCard(cardId: string) {
+		if (!this.ready) throw new Error("No active websocket connection!");
+		this.socket?.emit("deleteCard", cardId);
 	}
 
 	static connect(jwt: string, taskboardUri: string) {
@@ -67,6 +89,21 @@ export class WebsocketService {
 		this.socket.on("moveTaskboardPanel", (panel) => {
 			console.log("moveTaskboardPanel", panel);
 			this.onMoveTaskboardPanel && this.onMoveTaskboardPanel(panel);
+		});
+
+		this.socket.on("createCard", (card) => {
+			console.log("createCard", card);
+			this.onCreateCard && this.onCreateCard(card);
+		});
+
+		this.socket.on("moveCard", (card, from, to) => {
+			console.log("moveCard", card);
+			this.onMoveCard && this.onMoveCard(card, from, to);
+		});
+
+		this.socket.on("deleteCard", (card) => {
+			console.log("deleteCard", card);
+			this.onDeleteCard && this.onDeleteCard(card);
 		});
 
 		this.socket.on("updateConnected", (connected) => {

@@ -9,7 +9,7 @@ export interface CardAttributes {
 	id: string;
 	panel_id: string;
 	title: string;
-	owner?: string;
+	owner_id?: string;
 	sort_order: number;
 }
 
@@ -34,7 +34,7 @@ const Card = sequelize.define<Model<CardAttributes, CardCreationAttributes>>(
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		owner: {
+		owner_id: {
 			type: DataTypes.UUID,
 			allowNull: true,
 			references: {

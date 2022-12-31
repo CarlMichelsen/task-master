@@ -30,7 +30,7 @@ export const mapToClientTaskboard = async (
 
 	const clientPanelPromises: Promise<ClientPanel>[] = [];
 	for (let p of panels) {
-		clientPanelPromises.push(mapToClientPanel(p, input));
+		clientPanelPromises.push(mapToClientPanel(p));
 	}
 
 	const clientPanels = await Promise.all(clientPanelPromises);

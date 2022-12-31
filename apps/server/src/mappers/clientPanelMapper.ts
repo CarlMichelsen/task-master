@@ -3,27 +3,15 @@ import { ClientPanel } from "data-transfer-interfaces/panel/clientPanel";
 
 import { UserAttributes } from "../database/models/user";
 import { PanelAttributes } from "../database/models/panel";
-import { TaskboardAttributes } from "../database/models/taskboard";
 
 import { UserRepository } from "../repositories/userRepository";
 import { CardRepository } from "../repositories/cardRepository";
-import { TaskboardRepository } from "../repositories/taskboardRepository";
 
 import { mapToClientCard } from "./clientCardMapper";
 
 export const mapToClientPanel = async (
-	panel: PanelAttributes,
-	taskboardInput?: TaskboardAttributes
+	panel: PanelAttributes
 ): Promise<ClientPanel> => {
-	let taskboard: TaskboardAttributes | null = taskboardInput ?? null;
-	if (!taskboard) {
-		const taskboardRepository = new TaskboardRepository();
-		taskboard = await taskboardRepository.getTaskboard(panel.taskboard_id);
-	}
-
-	if (!taskboard)
-		throw new Error(`Could not find taskboard for panel <${panel.id}>`);
-
 	const cardRepository = new CardRepository();
 	const cards = await cardRepository.getCardsInPanel(panel.id);
 	const cachedUsers = new Map<string, UserAttributes>();
@@ -31,13 +19,13 @@ export const mapToClientPanel = async (
 
 	const clientCards: ClientCard[] = [];
 	for (let c of cards) {
-		let user = c.owner ? cachedUsers.get(c.owner) : undefined;
-		if (c.owner && !user) {
-			user = (await userRepository.getUserById(c.owner)) ?? undefined;
+		let user = c.owner_id ? cachedUsers.get(c.owner_id) : undefined;
+		if (c.owner_id && !user) {
+			user = (await userRepository.getUserById(c.owner_id)) ?? undefined;
 			if (user) cachedUsers.set(user.id, user);
 		}
 
-		const clientCard = await mapToClientCard(c, panel, user);
+		const clientCard = await mapToClientCard(c, user);
 		clientCards.push(clientCard);
 	}
 
@@ -53,9 +41,8 @@ export const mapToClientPanel = async (
 };
 
 export const mapToManyClientPanel = async (
-	panels: PanelAttributes[],
-	taskboardInput?: TaskboardAttributes
+	panels: PanelAttributes[]
 ): Promise<ClientPanel[]> => {
-	const promises = panels.map((p) => mapToClientPanel(p, taskboardInput));
+	const promises = panels.map((p) => mapToClientPanel(p));
 	return await Promise.all(promises);
 };

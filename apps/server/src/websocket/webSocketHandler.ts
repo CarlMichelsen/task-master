@@ -2,6 +2,8 @@ import * as io from "socket.io";
 import * as http from "http";
 import * as cors from "cors";
 
+import { delay } from "../delay";
+
 import { IInterServerEvents } from "./eventInterfaces/IInterServerEvents";
 import { IClientToServerEvents } from "data-transfer-interfaces/websocket/clientToServerEvents";
 import { IServerToClientEvents } from "data-transfer-interfaces/websocket/serverToClientEvents";
@@ -10,13 +12,13 @@ import { ISocketData } from "./eventInterfaces/ISocketData";
 import { AuthService } from "../services/authService";
 import { TaskboardLobby } from "./taskboardLobby";
 import { getUser, joinTaskboard } from "./validate";
+
 import {
 	mapToClientUser,
 	mapToManyClientUser,
 } from "../mappers/clientUserMapper";
-import { delay } from "../delay";
-import { PanelAttributes } from "../database/models/panel";
 import { mapToClientPanel } from "../mappers/clientPanelMapper";
+import { mapToClientCard } from "../mappers/clientCardMapper";
 
 export class WebSocketHandler {
 	lobbies: Map<string, TaskboardLobby>;
@@ -78,37 +80,49 @@ export class WebSocketHandler {
 					const panel =
 						(await lobby?.createTaskboardPanel(title, sortOrder)) ?? null;
 					if (!panel) return;
-					this.io
-						.to(uri)
-						.emit(
-							"createTaskboardPanel",
-							await mapToClientPanel(panel, lobby?.taskboard)
-						);
+					const cPanel = await mapToClientPanel(panel);
+					this.io.to(uri).emit("createTaskboardPanel", cPanel);
 				}
 			);
 
 			socket.on("moveTaskboardPanel", async (panelId, sortOrder) => {
-				const deletedPanel =
+				const movedPanel =
 					(await lobby?.moveTaskboardPanel(panelId, sortOrder)) ?? null;
-				if (!deletedPanel) return;
-				this.io
-					.to(uri)
-					.emit(
-						"moveTaskboardPanel",
-						await mapToClientPanel(deletedPanel, lobby?.taskboard)
-					);
+				if (!movedPanel) return;
+				const cPanel = await mapToClientPanel(movedPanel);
+				this.io.to(uri).emit("moveTaskboardPanel", cPanel);
 			});
 
 			socket.on("deleteTaskboardPanel", async (panelId) => {
 				const deletedPanel =
 					(await lobby?.deleteTaskboardPanel(panelId)) ?? null;
 				if (!deletedPanel) return;
-				this.io
-					.to(uri)
-					.emit(
-						"deleteTaskboardPanel",
-						await mapToClientPanel(deletedPanel, lobby?.taskboard)
-					);
+				const cPanel = await mapToClientPanel(deletedPanel);
+				this.io.to(uri).emit("deleteTaskboardPanel", cPanel);
+			});
+
+			socket.on("createCard", async (panelId: string, title: string) => {
+				const createdCard =
+					(await lobby?.createCard(title, panelId, user.id)) ?? null;
+				if (!createdCard) return;
+				this.io.to(uri).emit("createCard", await mapToClientCard(createdCard));
+			});
+
+			socket.on(
+				"moveCard",
+				async (cardId: string, from: string, to: string) => {
+					const movedCard = (await lobby?.moveCard(cardId, from, to)) ?? null;
+					if (!movedCard) return;
+					this.io
+						.to(uri)
+						.emit("moveCard", await mapToClientCard(movedCard), from, to);
+				}
+			);
+
+			socket.on("deleteCard", async (cardId: string) => {
+				const deletedCard = (await lobby?.deleteCard(cardId)) ?? null;
+				if (!deletedCard) return;
+				this.io.to(uri).emit("deleteCard", await mapToClientCard(deletedCard));
 			});
 
 			socket.on("disconnect", () => {

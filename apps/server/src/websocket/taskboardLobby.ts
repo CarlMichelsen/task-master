@@ -3,15 +3,16 @@ import { TaskboardAttributes } from "../database/models/taskboard";
 import { UserAttributes } from "../database/models/user";
 
 import { PanelService } from "../services/panelService";
+import { CardService } from "../services/cardService";
 
 export class TaskboardLobby {
 	taskboard: TaskboardAttributes;
 	connected: UserAttributes[] = [];
-	panelService: PanelService;
+	private readonly panelService = new PanelService();
+	private readonly cardService = new CardService();
 
 	constructor(taskboard: TaskboardAttributes) {
 		this.taskboard = taskboard;
-		this.panelService = new PanelService();
 		console.log(
 			"lobby for taskboard",
 			`"${taskboard.taskboard_name}"`,
@@ -51,6 +52,20 @@ export class TaskboardLobby {
 		sortOrder: number
 	): Promise<PanelAttributes | null> {
 		return await this.panelService.moveTaskboardPanel(panelId, sortOrder);
+	}
+
+	async createCard(title: string, panelId: string, ownerId: string) {
+		return await this.cardService.createCard(title, panelId, ownerId);
+	}
+
+	async moveCard(cardId: string, from: string, to: string) {
+		const inFromPanel = await this.cardService.isCardInPanel(cardId, from);
+		if (!inFromPanel) return null;
+		return await this.cardService.moveCard(cardId, to);
+	}
+
+	async deleteCard(cardId: string) {
+		return await this.cardService.deleteCard(cardId);
 	}
 
 	isEmpty(): boolean {

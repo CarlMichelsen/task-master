@@ -15,16 +15,23 @@
 		WebsocketService.createTaskboardPanel(title, order);
 	};
 
-	const createNewCard = (
-		event: CustomEvent<{ title: string; panelId: string }>
+	const createCardEvent = (
+		event: CustomEvent<{ panelId: string; title: string }>
 	) => {
-		console.log(event.detail);
+		const { panelId, title } = event.detail;
+		WebsocketService.createCard(panelId, title);
 	};
 
-	const moveCard = (
-		event: CustomEvent<{ cardId: string; panelId: string }>
+	const moveCardEvent = (
+		event: CustomEvent<{ cardId: string; from: string; to: string }>
 	) => {
-		console.log(event.detail);
+		const { cardId, from, to } = event.detail;
+		WebsocketService.moveCard(cardId, from, to);
+	};
+
+	const deleteCardEvent = (event: CustomEvent<string>) => {
+		const cardId = event.detail;
+		WebsocketService.deleteCard(cardId);
 	};
 
 	const deletePanelEvent = (event: CustomEvent<string>) => {
@@ -48,7 +55,8 @@
 			{#each $TaskboardStore.panels as panel, id}
 				<Panel
 					{panel}
-					on:newCard={createNewCard}
+					on:newCard={createCardEvent}
+					on:deleteCard={deleteCardEvent}
 					on:delete={deletePanelEvent}
 					on:move={movePanelEvent}
 					isFirst={id === 0}

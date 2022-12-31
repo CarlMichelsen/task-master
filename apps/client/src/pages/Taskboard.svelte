@@ -10,24 +10,21 @@
 	import { TaskboardService } from "../services/taskboardService";
 	import { RouterService } from "../services/routerService";
 	import { WebsocketService } from "../services/websocketService";
-	import {
-		mergeClientUserLists,
-		sortClientUserList,
-		mergeClientPanelLists,
-	} from "../util/listUtil";
+	import { mergeLists, sortClientUserList } from "../util/listUtil";
 
 	import type { ClientUser } from "data-transfer-interfaces/user/clientUser";
 	import type { ClientPanel } from "data-transfer-interfaces/panel/clientPanel";
+	import type { ClientCard } from "data-transfer-interfaces/card/clientCard";
 
 	export let taskboardUri: string | null = null;
 
 	const onForceUpdateConnected = (allConnected: ClientUser[]) => {
 		console.log("force", allConnected);
 		if (!$TaskboardStore) return;
-		const allMembers = mergeClientUserLists(
+		const allMembers = mergeLists(
 			$TaskboardStore?.members ?? [],
 			allConnected
-		);
+		) as ClientUser[];
 		TaskboardStore.set({
 			...$TaskboardStore,
 			members: allMembers.sort(sortClientUserList($ClientDataStore?.user?.id)),
@@ -36,9 +33,9 @@
 
 	const onConnectedJoin = (connected: ClientUser) => {
 		if (!$TaskboardStore) return;
-		const allMembers = mergeClientUserLists($TaskboardStore?.members ?? [], [
+		const allMembers = mergeLists($TaskboardStore?.members ?? [], [
 			connected,
-		]);
+		]) as ClientUser[];
 		TaskboardStore.set({
 			...$TaskboardStore,
 			members: allMembers.sort(sortClientUserList($ClientDataStore?.user?.id)),
@@ -63,7 +60,7 @@
 		TaskboardStore.set({
 			...$TaskboardStore,
 			panels: (panel
-				? mergeClientPanelLists(allPanels, [panel])
+				? (mergeLists(allPanels, [panel]) as ClientPanel[])
 				: allPanels
 			).sort((p1, p2) => p1.sortOrder - p2.sortOrder),
 		});
@@ -80,6 +77,36 @@
 		});
 	};
 
+	const onCreateCard = (card: ClientCard) => {
+		if (!$TaskboardStore) return;
+		const panelIdx = $TaskboardStore.panels.findIndex(
+			(p) => p.id === card.panelId
+		);
+		if (panelIdx === -1) return;
+
+		TaskboardStore.update((taskboard) => {
+			taskboard?.panels[panelIdx].cards.push(card);
+			return taskboard;
+		});
+	};
+
+	const onDeleteCard = (card: ClientCard) => {
+		if (!$TaskboardStore) return;
+		const panelIdx = $TaskboardStore.panels.findIndex(
+			(p) => p.id === card.panelId
+		);
+		if (panelIdx === -1) return;
+		TaskboardStore.update((taskboard) => {
+			const cardIdx = taskboard?.panels[panelIdx].cards.findIndex(
+				(c) => c.id === card.id
+			);
+			if (cardIdx == null || cardIdx === -1) return taskboard;
+
+			taskboard?.panels[panelIdx].cards.splice(cardIdx, 1);
+			return taskboard;
+		});
+	};
+
 	const connectWebsocket = (jwt: string, uri: string) => {
 		WebsocketService.connect(jwt, uri);
 		WebsocketService.onUpdateConnected = onForceUpdateConnected;
@@ -88,6 +115,10 @@
 		WebsocketService.onCreateTaskboardPanel = onUpdateTaskboardPanel;
 		WebsocketService.onMoveTaskboardPanel = onUpdateTaskboardPanel;
 		WebsocketService.onDeleteTaskboardPanel = onDeleteTaskboardPanel;
+
+		WebsocketService.onCreateCard = onCreateCard;
+		WebsocketService.onDeleteCard = onDeleteCard;
+		WebsocketService.onMoveCard = null;
 	};
 
 	const disconnectWebsocket = () => {
