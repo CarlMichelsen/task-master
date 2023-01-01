@@ -1,5 +1,5 @@
 <script lang="ts">
-	import LoginCornerMenu from "./LoginCornerMenu.svelte";
+	import LoginCornerMenu from "./Corner/LoginCornerMenu.svelte";
 	import LoginForm from "./LoginForm.svelte";
 	import Profile from "./Profile.svelte";
 	import TopRightUserBox from "./User/TopRightUserBox.svelte";
@@ -92,7 +92,7 @@
 					{#if $ClientDataStore?.authState === AuthState.LoggedIn}
 						<Profile />
 					{:else if $ClientDataStore?.authState === AuthState.Authorizing}
-						<p>Authorizing</p>
+						<p>Authorizing...</p>
 					{:else}
 						<LoginForm />
 					{/if}

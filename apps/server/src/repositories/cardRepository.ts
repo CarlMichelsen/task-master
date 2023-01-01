@@ -14,6 +14,13 @@ export class CardRepository {
 		return cardResults.map((card) => card.dataValues);
 	}
 
+	async getCards(panelId: string): Promise<CardAttributes[]> {
+		const cardResponse = await Card.findAll({
+			where: { panel_id: panelId },
+		});
+		return cardResponse.map((cr) => cr.dataValues);
+	}
+
 	async createCard(
 		card: CardCreationAttributes
 	): Promise<CardAttributes | null> {

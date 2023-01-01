@@ -1,3 +1,4 @@
+import { CardAttributes } from "../database/models/card";
 import {
 	Panel,
 	PanelAttributes,
