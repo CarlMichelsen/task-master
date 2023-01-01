@@ -35,7 +35,10 @@
 		const panels = $TaskboardStore?.panels ?? [];
 		const maxAttempt = Math.max(...panels.map((p) => p.sortOrder));
 		const order = isFinite(maxAttempt) ? maxAttempt + 1000 : 1000;
-		WebsocketService.createTaskboardPanel(title, order);
+		WebsocketService.createTaskboardPanel(
+			title,
+			panels.length === 0 ? 1000 * 1000 : order
+		);
 	};
 
 	const createCardEvent = (
