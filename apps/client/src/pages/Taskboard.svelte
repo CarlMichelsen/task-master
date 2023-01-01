@@ -18,6 +18,10 @@
 
 	export let taskboardUri: string | null = null;
 
+	const cardSorting = (c1: ClientCard, c2: ClientCard): number => {
+		return c1.sortOrder - c2.sortOrder;
+	};
+
 	const onForceUpdateConnected = (allConnected: ClientUser[]) => {
 		console.log("force", allConnected);
 		if (!$TaskboardStore) return;
@@ -67,62 +71,71 @@
 	};
 
 	const onDeleteTaskboardPanel = (panel: ClientPanel) => {
-		if (!$TaskboardStore) return;
-		const allPanels = $TaskboardStore.panels;
-		TaskboardStore.set({
-			...$TaskboardStore,
-			panels: allPanels
+		TaskboardStore.update((taskboard) => {
+			if (!taskboard) return taskboard;
+			taskboard.panels = taskboard.panels
 				.filter((p) => p.id !== panel.id)
-				.sort((p1, p2) => p1.sortOrder - p2.sortOrder),
+				.sort((p1, p2) => p1.sortOrder - p2.sortOrder);
+			return taskboard;
 		});
 	};
 
 	const onCreateCard = (card: ClientCard) => {
-		if (!$TaskboardStore) return;
-		const panelIdx = $TaskboardStore.panels.findIndex(
-			(p) => p.id === card.panelId
-		);
-		if (panelIdx === -1) return;
-
 		TaskboardStore.update((taskboard) => {
-			taskboard?.panels[panelIdx].cards.push(card);
+			if (!taskboard) return taskboard;
+
+			const panelIdx = taskboard.panels.findIndex((p) => p.id === card.panelId);
+			if (panelIdx === -1) return taskboard;
+
+			let cards = taskboard.panels[panelIdx].cards;
+			cards.push(card);
+			cards = cards.sort(cardSorting);
+
+			taskboard.panels[panelIdx].cards = cards;
 			return taskboard;
 		});
 	};
 
 	const onMoveCard = (card: ClientCard, from: string, to: string) => {
-		if (!$TaskboardStore) return;
-		const fromPanelIdx = $TaskboardStore.panels.findIndex((p) => p.id === from);
-		if (fromPanelIdx === -1) return;
-
-		const toPanelIdx = $TaskboardStore.panels.findIndex((p) => p.id === to);
-		if (toPanelIdx === -1) return;
-
 		TaskboardStore.update((taskboard) => {
-			const idx =
-				taskboard?.panels[fromPanelIdx].cards.findIndex(
+			if (!taskboard) return taskboard;
+
+			const fromPanelIdx = taskboard.panels.findIndex((p) => p.id === from);
+			if (fromPanelIdx === -1) return taskboard;
+
+			const toPanelIdx = taskboard.panels.findIndex((p) => p.id === to);
+			if (toPanelIdx === -1) return taskboard;
+
+			const firstPanelIdx =
+				taskboard.panels[fromPanelIdx].cards.findIndex(
 					(c) => c.id === card.id
 				) ?? -1;
-			if (idx === -1) return taskboard;
-			taskboard?.panels[fromPanelIdx].cards.splice(idx, 1);
-			taskboard?.panels[toPanelIdx].cards.push(card);
+			if (firstPanelIdx === -1) return taskboard;
+
+			taskboard.panels[fromPanelIdx].cards.splice(firstPanelIdx, 1);
+
+			let toCards = taskboard.panels[toPanelIdx].cards;
+			toCards.push(card);
+			toCards = toCards.sort(cardSorting);
+
+			taskboard.panels[toPanelIdx].cards = toCards;
 			return taskboard;
 		});
 	};
 
 	const onDeleteCard = (card: ClientCard) => {
-		if (!$TaskboardStore) return;
-		const panelIdx = $TaskboardStore.panels.findIndex(
-			(p) => p.id === card.panelId
-		);
-		if (panelIdx === -1) return;
 		TaskboardStore.update((taskboard) => {
-			const cardIdx = taskboard?.panels[panelIdx].cards.findIndex(
+			if (!taskboard) return taskboard;
+
+			const panelIdx = taskboard.panels.findIndex((p) => p.id === card.panelId);
+			if (panelIdx === -1) return taskboard;
+
+			const cardIdx = taskboard.panels[panelIdx].cards.findIndex(
 				(c) => c.id === card.id
 			);
 			if (cardIdx == null || cardIdx === -1) return taskboard;
 
-			taskboard?.panels[panelIdx].cards.splice(cardIdx, 1);
+			taskboard.panels[panelIdx].cards.splice(cardIdx, 1);
 			return taskboard;
 		});
 	};
@@ -177,9 +190,7 @@
 <div>
 	<Header headerTitle={$TaskboardStore?.name ?? undefined} />
 	{#if $TaskboardStore !== null && $ClientDataStore?.user}
-		<div>
-			<TaskboardHandler />
-		</div>
+		<TaskboardHandler />
 	{:else}
 		<Loading />
 	{/if}

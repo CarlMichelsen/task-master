@@ -61,6 +61,7 @@ export class TaskboardLobby {
 	async moveCard(cardId: string, from: string, to: string) {
 		const isInFromPanel = await this.cardService.isCardInPanel(cardId, from);
 		const sameTaskboard = await this.panelService.inSameTaskboard(from, to);
+		console.log(cardId, isInFromPanel, sameTaskboard);
 		if (!isInFromPanel || !sameTaskboard) return null;
 		return await this.cardService.moveCard(cardId, to);
 	}

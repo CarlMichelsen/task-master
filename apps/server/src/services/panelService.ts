@@ -34,7 +34,7 @@ export class PanelService {
 		if (!panel1) return false;
 		if (!panel2) return false;
 
-		return panel1.id === panel2.id;
+		return panel1.taskboard_id === panel2.taskboard_id;
 	}
 
 	public async createPanelForTaskboard(

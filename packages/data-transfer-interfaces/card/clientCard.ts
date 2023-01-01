@@ -5,4 +5,5 @@ export interface ClientCard {
 	panelId: string;
 	owner: ClientUser | null;
 	title: string;
+	sortOrder: number;
 }

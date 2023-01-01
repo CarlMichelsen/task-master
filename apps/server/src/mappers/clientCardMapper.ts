@@ -25,6 +25,7 @@ export const mapToClientCard = async (
 		title: card.title,
 		panelId: card.panel_id,
 		owner: owner ? await mapToClientUser(owner) : null,
+		sortOrder: card.sort_order,
 	};
 
 	return clientCard;
