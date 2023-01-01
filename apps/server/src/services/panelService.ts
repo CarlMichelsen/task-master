@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import {
+	Panel,
 	PanelAttributes,
 	PanelCreationAttributes,
 } from "../database/models/panel";
@@ -21,6 +22,19 @@ export class PanelService {
 			title: title,
 			sort_order: sortOrder,
 		};
+	}
+
+	public async inSameTaskboard(p1: string, p2: string): Promise<boolean> {
+		const p1Promise = Panel.findByPk(p1);
+		const p2Promise = Panel.findByPk(p2);
+
+		const panel1 = (await p1Promise)?.dataValues;
+		const panel2 = (await p2Promise)?.dataValues;
+
+		if (!panel1) return false;
+		if (!panel2) return false;
+
+		return panel1.id === panel2.id;
 	}
 
 	public async createPanelForTaskboard(
