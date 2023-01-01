@@ -23,6 +23,15 @@
 		dispatch("deleteCard", event.detail);
 	};
 
+	const moveCard = (event: CustomEvent<string>) => {
+		const moveObj = {
+			cardId: event.detail,
+			from: panel.id,
+			to: undefined,
+		};
+		dispatch("moveCard", moveObj);
+	};
+
 	const deletePanel = () => {
 		dispatch("delete", panel.id);
 	};
@@ -72,7 +81,7 @@
 	<div class="grid grid-cols-1 lg:grid-cols-2">
 		<NewCard on:createCard={createCard} />
 		{#each panel.cards as card}
-			<Card {card} on:deleteCard={deleteCard} />
+			<Card {card} on:deleteCard={deleteCard} on:moveCard={moveCard} />
 		{/each}
 	</div>
 </div>

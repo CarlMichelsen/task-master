@@ -50,9 +50,9 @@ export class WebsocketService {
 		this.socket?.emit("createCard", panelId, title);
 	}
 
-	static moveCard(cardId: string, fromPaneld: string, toPaneld: string) {
+	static moveCard(cardId: string, fromPanelId: string, toPanelId: string) {
 		if (!this.ready) throw new Error("No active websocket connection!");
-		this.socket?.emit("moveCard", cardId, fromPaneld, toPaneld);
+		this.socket?.emit("moveCard", cardId, fromPanelId, toPanelId);
 	}
 
 	static deleteCard(cardId: string) {

@@ -25,7 +25,12 @@
 	const moveCardEvent = (
 		event: CustomEvent<{ cardId: string; from: string; to: string }>
 	) => {
-		const { cardId, from, to } = event.detail;
+		const { cardId, from } = event.detail;
+		const validPanels =
+			$TaskboardStore?.panels.filter((p) => p.id !== from) ?? [];
+		if (validPanels.length === 0) return;
+
+		const to = validPanels[Math.floor(Math.random() * validPanels.length)].id;
 		WebsocketService.moveCard(cardId, from, to);
 	};
 
@@ -56,6 +61,7 @@
 				<Panel
 					{panel}
 					on:newCard={createCardEvent}
+					on:moveCard={moveCardEvent}
 					on:deleteCard={deleteCardEvent}
 					on:delete={deletePanelEvent}
 					on:move={movePanelEvent}

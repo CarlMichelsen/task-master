@@ -214,7 +214,7 @@ export class AuthService {
 
 		const token = jwt.sign(claims, Configuration.authorizationSecret, {
 			algorithm: "HS512",
-			expiresIn: "12h",
+			expiresIn: "2d",
 		});
 
 		return token;

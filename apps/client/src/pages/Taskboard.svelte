@@ -90,6 +90,26 @@
 		});
 	};
 
+	const onMoveCard = (card: ClientCard, from: string, to: string) => {
+		if (!$TaskboardStore) return;
+		const fromPanelIdx = $TaskboardStore.panels.findIndex((p) => p.id === from);
+		if (fromPanelIdx === -1) return;
+
+		const toPanelIdx = $TaskboardStore.panels.findIndex((p) => p.id === to);
+		if (toPanelIdx === -1) return;
+
+		TaskboardStore.update((taskboard) => {
+			const idx =
+				taskboard?.panels[fromPanelIdx].cards.findIndex(
+					(c) => c.id === card.id
+				) ?? -1;
+			if (idx === -1) return taskboard;
+			taskboard?.panels[fromPanelIdx].cards.splice(idx, 1);
+			taskboard?.panels[toPanelIdx].cards.push(card);
+			return taskboard;
+		});
+	};
+
 	const onDeleteCard = (card: ClientCard) => {
 		if (!$TaskboardStore) return;
 		const panelIdx = $TaskboardStore.panels.findIndex(
@@ -118,7 +138,7 @@
 
 		WebsocketService.onCreateCard = onCreateCard;
 		WebsocketService.onDeleteCard = onDeleteCard;
-		WebsocketService.onMoveCard = null;
+		WebsocketService.onMoveCard = onMoveCard;
 	};
 
 	const disconnectWebsocket = () => {

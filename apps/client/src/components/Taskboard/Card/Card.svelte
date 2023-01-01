@@ -11,6 +11,10 @@
 	const deleteCard = () => {
 		dispatch("deleteCard", card.id);
 	};
+
+	const moveToRandomPanel = () => {
+		dispatch("moveCard", card.id);
+	};
 </script>
 
 <BaseCard>
@@ -29,7 +33,11 @@
 			>
 		</div>
 		<div class="p-1">
-			<p>:)</p>
+			<button
+				on:click={moveToRandomPanel}
+				class="font-bold text-xl hover:no-underline hover:text-white active:text-red-600 hover:bg-neutral-700 w-8 h-8 rounded-full pb-px pr-px"
+				>↻</button
+			>
 		</div>
 	</div>
 </BaseCard>
